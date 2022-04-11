@@ -1,6 +1,6 @@
 package api
 
-import "github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 
 func Start() {
 	handleRequests()
@@ -8,10 +8,13 @@ func Start() {
 
 func handleRequests() {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+
+	r.Use(gin.Recovery())
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{"PUT", "GET", "POST"},
+		AllowHeaders: []string{"Content-Type", "Origin"},
+	}))
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
