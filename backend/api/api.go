@@ -1,10 +1,16 @@
 package api
 
+import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	ApiPath = "/api/"
+)
 
 func Start() {
 	handleRequests()
@@ -20,6 +26,9 @@ func handleRequests() {
 		AllowMethods: []string{"PUT", "GET", "POST"},
 		AllowHeaders: []string{"Content-Type", "Origin"},
 	}))
+
+	r.POST(ApiPath+"videos/", uploadVideoChunk)
+
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 
