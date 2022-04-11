@@ -1,0 +1,45 @@
+header {
+    height: 5rem;
+    background-color: #81C784;
+    color: #fafafa;
+    width: 100%;
+    display:flex;
+}
+
+.header-mid a {
+  color: #fafafa;
+  text-decoration: none;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.header-mid a:hover {
+  color: #E0E0E0
+}
+
+.header-left {
+  width: 33%;
+  display: flex;
+  align-items: center;
+}
+
+.header-left h1 {
+  margin: 0 auto;
+  margin-left: 1em;
+}
+
+.header-mid {
+  width: 33%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.header-right {
+  width: 33%;
+  height:100%;
+  text-align: right;
+  margin-right: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
