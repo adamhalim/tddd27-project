@@ -1,6 +1,10 @@
 package api
 
+	"fmt"
+	"net/http"
+
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 
 func Start() {
 	handleRequests()
@@ -17,4 +21,11 @@ func handleRequests() {
 		AllowHeaders: []string{"Content-Type", "Origin"},
 	}))
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+}
+
+func internalError(c *gin.Context, err error) {
+	fmt.Printf(err.Error())
+	c.JSON(http.StatusInternalServerError, gin.H{
+		"error": err.Error(),
+	})
 }
