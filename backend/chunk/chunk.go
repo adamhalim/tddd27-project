@@ -15,6 +15,7 @@ type chunkFile struct {
 	Id               string
 	Directory        string
 	OriginalFileName string
+	FileName         string
 }
 
 func CreateChunk(chunk []byte, id string, filename string, chunkName string) error {
@@ -32,6 +33,7 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		Directory:        tmpChunkDir + chunkName + "/",
 		OriginalFileName: filename,
 	}
+	c.FileName = fmt.Sprintf("%s%s_%s.blb", c.Directory, c.Id, c.OriginalFileName)
 	if err := createChunk(c); err != nil {
 		return err
 	}
@@ -51,7 +53,7 @@ func createDirectory(filename string) error {
 }
 
 func createChunk(c chunkFile) error {
-	if err := ioutil.WriteFile(fmt.Sprintf("%s%s_%s.blb", c.Directory, c.OriginalFileName, c.Id), c.Data, 0644); err != nil {
+	if err := ioutil.WriteFile(c.FileName, c.Data, 0644); err != nil {
 		return err
 	}
 	return nil
