@@ -31,7 +31,7 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		if err := createDirectory(chunkName); err != nil {
 			return err
 		}
-		if err := newSession(chunkName); err != nil {
+		if err := newSession(chunkName, filename); err != nil {
 			// Terminate all future entries with this chunkName?
 			return err
 		}
