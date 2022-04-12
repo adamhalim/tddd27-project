@@ -31,6 +31,16 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		if err := createDirectory(chunkName); err != nil {
 			return err
 		}
+		if err := newSession(chunkName); err != nil {
+			// Terminate all future entries with this chunkName?
+			return err
+		}
+	}
+
+	session, err := getSession(chunkName)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
 	}
 
 	// Chunk created at tmp/chunkName/filename_id.blb
@@ -44,6 +54,11 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		return err
 	}
 
+	if err := session.addChunk(&c); err != nil {
+		return err
+	}
+	return nil
+}
 	return nil
 }
 
