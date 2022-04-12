@@ -62,5 +62,7 @@ func createChunk(c chunkFile) error {
 	if err := ioutil.WriteFile(c.FileName, c.Data, 0644); err != nil {
 		return err
 	}
+	// We don't need to keep the data in memory after it's written to file
+	c.Data = nil
 	return nil
 }
