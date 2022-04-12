@@ -7,7 +7,11 @@ import (
 )
 
 const (
-	tmpChunkDir = "tmp/"
+	tmpChunkDir   = "tmp/"
+	oneMB         = 1_048_576
+	maxFileSize   = 200 * oneMB
+	ChunkSize     = 5 * oneMB
+	maxChunkCount = maxFileSize / ChunkSize
 )
 
 type chunkFile struct {
