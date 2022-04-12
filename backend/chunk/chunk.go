@@ -57,6 +57,37 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 	}
 	return nil
 }
+
+// Combine all chunks for a session into a single result file
+func CombineChunks(chunkName string) error {
+	session, err := getSession(chunkName)
+	if err != nil {
+		return err
+	}
+	defer delete(sessions, chunkName)
+
+	resultFileName := fmt.Sprintf("%s_%s", session.chunkName, session.originalFileName)
+	resultFile, err := os.Create(session.directory + "/" + resultFileName)
+	defer resultFile.Close()
+	if err != nil {
+		return err
+	}
+
+	for _, chunk := range session.chunks {
+		byteFile, err := ioutil.ReadFile(chunk.FileName)
+		if err != nil {
+			return err
+		}
+		_, err = resultFile.Write(byteFile)
+		if err != nil {
+			return err
+		}
+		err = os.Remove(chunk.FileName)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

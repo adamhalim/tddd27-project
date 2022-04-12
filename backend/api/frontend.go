@@ -23,3 +23,10 @@ func uploadVideoChunk(c *gin.Context) {
 		internalError(c, err)
 	}
 }
+
+func combineChunks(c *gin.Context) {
+	chunkName := c.Query("chunkName")
+	if err := chunk.CombineChunks(chunkName); err != nil {
+		internalError(c, err)
+	}
+}
