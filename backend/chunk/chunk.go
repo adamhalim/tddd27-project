@@ -22,6 +22,10 @@ type chunkFile struct {
 }
 
 func CreateChunk(chunk []byte, id string, filename string, chunkName string) error {
+	if len(chunk) > ChunkSize {
+		// TOOD: Do cleanup
+		return fmt.Errorf("chunk size greater than %db", ChunkSize)
+	}
 	// New empty directory created at tmp/chunkName/
 	if id == "0" {
 		if err := createDirectory(chunkName); err != nil {
