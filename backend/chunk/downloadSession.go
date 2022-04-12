@@ -10,14 +10,15 @@ import (
 // This file handles current file downloads
 
 type downloadSession struct {
-	chunkCount    int
-	totalSize     int
-	lock          *sync.Mutex
-	chunkName     string
-	lastModified  time.Time
-	directory     string
-	chunks        []*chunkFile
-	fileExtension string
+	chunkCount       int
+	totalSize        int
+	lock             *sync.Mutex
+	chunkName        string
+	lastModified     time.Time
+	directory        string
+	chunks           []*chunkFile
+	originalFileName string
+	fileExtension    string
 }
 
 var (
@@ -40,14 +41,15 @@ func newSession(chunkName string, fileName string) error {
 	fileExtension := filepath.Ext(fileName)
 
 	sessions[chunkName] = &downloadSession{
-		chunkCount:    0,
-		totalSize:     0,
-		lock:          &sync.Mutex{},
-		chunkName:     chunkName,
-		lastModified:  time.Now(),
-		directory:     tmpChunkDir + chunkName,
-		chunks:        make([]*chunkFile, 0),
-		fileExtension: fileExtension,
+		chunkCount:       0,
+		totalSize:        0,
+		lock:             &sync.Mutex{},
+		chunkName:        chunkName,
+		lastModified:     time.Now(),
+		directory:        tmpChunkDir + chunkName,
+		chunks:           make([]*chunkFile, 0),
+		originalFileName: fileName,
+		fileExtension:    fileExtension,
 	}
 
 	return nil

@@ -15,10 +15,9 @@ const (
 )
 
 type chunkFile struct {
-	Data             []byte
-	Id               string
-	OriginalFileName string
-	FileName         string
+	Data     []byte
+	Id       string
+	FileName string
 }
 
 func CreateChunk(chunk []byte, id string, filename string, chunkName string) error {
@@ -45,11 +44,10 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 
 	// Chunk created at tmp/chunkName/filename_id.blb
 	c := chunkFile{
-		Data:             chunk,
-		Id:               id,
-		OriginalFileName: filename,
+		Data: chunk,
+		Id:   id,
 	}
-	c.FileName = fmt.Sprintf("%s%s_%s.blb", session.directory, c.Id, c.OriginalFileName)
+	c.FileName = fmt.Sprintf("%s%s_%s.blb", session.directory, c.Id, session.originalFileName)
 	if err := createChunk(c); err != nil {
 		return err
 	}
