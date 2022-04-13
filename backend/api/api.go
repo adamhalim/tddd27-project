@@ -29,6 +29,7 @@ func handleRequests() {
 
 	r.POST(ApiPath+"videos/", uploadVideoChunk)
 	r.POST(ApiPath+"videos/combine/", combineChunks)
+	r.GET(ApiPath+"videos/chunks/", chunkConstants)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
