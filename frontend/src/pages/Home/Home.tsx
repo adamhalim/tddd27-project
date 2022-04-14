@@ -1,9 +1,10 @@
+import UploadButton from '../../components/UploadButton'
 import './style.css'
 const Home = () => {
 
     return (
         <div className="home-container">
-            <h1>Home</h1>
+            <UploadButton />
         </div>
     )
 }
