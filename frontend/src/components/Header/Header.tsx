@@ -1,14 +1,9 @@
 import { Link } from 'react-router-dom'
-import LoggedIn from './Buttons/LoggedIn'
-import LoggedOut from './Buttons/LoggedOut'
+import AuthButtons from './AuthButtons/'
 import './style.css'
 
-type HeaderType = {
-    signedIn: boolean,
-    signIn: VoidFunction
-}
 
-const Header = ({ signedIn, signIn }: HeaderType) => {
+const Header = () => {
     return (
         <header>
             <div className="header-left">
@@ -17,12 +12,7 @@ const Header = ({ signedIn, signIn }: HeaderType) => {
             <Link to="/"><h1 className='text-4xl' >vidds™</h1></Link>
             </div>
             <div className="header-right">
-                {
-                    signedIn ?
-                        <LoggedIn />
-                        :
-                        <LoggedOut />
-                }
+                <AuthButtons />
             </div>
         </header>
     )
