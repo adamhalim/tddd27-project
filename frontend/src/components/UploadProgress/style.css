@@ -1,0 +1,9 @@
+.upload-progress-container {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: solid;
+    padding: 1em;
+    overflow-wrap: break-word;
+    margin-top: 3em;
+}

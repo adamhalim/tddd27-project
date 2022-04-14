@@ -24,3 +24,6 @@ yarn-error.log*
 
 # Go binary
 backend/tddd27_2022_project
+
+# Temporary files
+backend/tmp/
