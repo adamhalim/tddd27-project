@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.liu.se/adaab301/tddd27_2022_project/api/middleware"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/api/middleware"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
