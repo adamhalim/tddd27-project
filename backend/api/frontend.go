@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.liu.se/adaab301/tddd27_2022_project/chunk"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
 )
 
 func uploadVideoChunk(c *gin.Context) {

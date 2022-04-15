@@ -1,4 +1,4 @@
-module gitlab.liu.se/adaab301/tddd27_2022_project
+module gitlab.liu.se/adaab301/tddd27_2022_project/backend
 
 go 1.18
 
