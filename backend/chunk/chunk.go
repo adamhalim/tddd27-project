@@ -19,6 +19,14 @@ type chunkFile struct {
 	FileName string
 }
 
+func init() {
+	os.RemoveAll("tmp/")
+	err := os.MkdirAll("tmp/", os.ModeDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func CreateChunk(chunk []byte, id string, filename string, chunkName string) error {
 	if len(chunk) > ChunkSize {
 		// TOOD: Do cleanup
