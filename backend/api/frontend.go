@@ -3,6 +3,7 @@ package api
 import (
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
@@ -27,9 +28,15 @@ func uploadVideoChunk(c *gin.Context) {
 
 func combineChunks(c *gin.Context) {
 	chunkName := c.Query("chunkName")
-	if err := chunk.CombineChunks(chunkName); err != nil {
+	file, directory, err := chunk.CombineChunks(chunkName)
+	if err != nil {
 		internalError(c, err)
 	}
+	err = chunk.ForwardVideoToTranscoder(file)
+	if err != nil {
+		internalError(c, err)
+	}
+	os.RemoveAll(directory)
 }
 
 func chunkConstants(c *gin.Context) {
