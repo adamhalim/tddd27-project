@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"mime/multipart"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -58,6 +59,8 @@ func postVideo(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
+
+	c.Status(http.StatusOK)
 
 	// TODO: upload to database & do
 }

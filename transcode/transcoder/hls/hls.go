@@ -2,7 +2,6 @@ package hls
 
 import (
 	"os"
-	"sync"
 
 	h "github.com/rendyfebry/go-hls-transcoder"
 )
@@ -28,17 +27,11 @@ func TranscodeToHLS(fileName string, dir string) error {
 	}
 	h.GeneratePlaylist(variants, targetPath, "")
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
 	for _, res := range resOptions {
-		defer wg.Done()
-		err = h.GenerateHLS(ffmpegPath, fileName, targetPath, res)
+		err = h.GenerateHLS(ffmpegPath, fileName, targetPath, res, true)
 		if err != nil {
 			return err
 		}
 	}
-
-	wg.Wait()
-
 	return nil
 }
