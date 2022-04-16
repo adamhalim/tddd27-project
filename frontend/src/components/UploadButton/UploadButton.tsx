@@ -27,6 +27,7 @@ const UploadButton = () => {
 
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setFileTooLarge(false);
+        setProgress(0);
         const file = e.target.files?.item(0);
 
         if (file) {
