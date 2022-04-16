@@ -23,7 +23,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # Go binary
-backend/tddd27_2022_project
+backend/backend
+transcode/transcode
 
 # Temporary files
 backend/tmp/
+transcode/tmp/
+
+#vscode
+launch.json
+__debug_bin
