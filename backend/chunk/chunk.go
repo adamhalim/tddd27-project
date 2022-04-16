@@ -8,9 +8,8 @@ import (
 
 const (
 	tmpChunkDir   = "tmp/"
-	oneMB         = 1_048_576
-	MaxFileSize   = 200 * oneMB
-	ChunkSize     = 5 * oneMB
+	MaxFileSize   = 200 << 20
+	ChunkSize     = 1 << 20
 	maxChunkCount = MaxFileSize / ChunkSize
 )
 
