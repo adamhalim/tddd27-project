@@ -24,14 +24,19 @@ const UploadButton = () => {
     const [uploadInProgress, setUploadInProgress] = useState(false);
     const [fileName, setFileName] = useState("")
     const [uploadFailed, setUploadFailed] = useState(false);
+    const [statusText, setStatusText] = useState("");
+    const [loading, setLoading] = useState(false)
 
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setFileTooLarge(false);
         setProgress(0);
+        setStatusText("")
         const file = e.target.files?.item(0);
 
         if (file) {
             setUploadInProgress(true);
+            setStatusText("Uploading file...")
+            setLoading(true);
             setFileName(file.name)
 
             const accessToken = await getAccessTokenSilently({ audience: 'http://localhost:3000/' })
@@ -68,7 +73,20 @@ const UploadButton = () => {
                     return;
                 }
             }
-            await allChunksUploaded(chunkName, accessToken)
+            setLoading(false)
+            setStatusText("Upload complete!")
+            setTimeout(() => {
+                setStatusText("Transcoding file...")
+                setLoading(true)
+            },3000)
+
+            const transcodeStatus = await allChunksUploaded(chunkName, accessToken)
+            setLoading(false)
+            if (transcodeStatus) {
+                setStatusText("Transcoding complete!")
+            } else {
+                setStatusText("Transcoding failed...")
+            }
         }
     }
 
@@ -144,7 +162,7 @@ const UploadButton = () => {
                 id='upload-button'
             />
             {
-                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} />
+                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} />
             }
         </div>
     )
