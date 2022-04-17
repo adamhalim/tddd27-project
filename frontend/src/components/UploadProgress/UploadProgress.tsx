@@ -5,20 +5,21 @@ type UploadProgressType = {
     progress: number,
     fileName: string,
     statusText: string,
-    loading: boolean
+    loading: boolean,
+    errorOccured: boolean,
 }
 
-const UploadProgress = ({ progress, fileName, statusText, loading: loading }: UploadProgressType) => {
+const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured }: UploadProgressType) => {
     return (
         <div className='upload-progress-container'>
             <p>filename: {fileName}</p>
             <p 
-                className={`${loading ? "loading" : ""}`}
+                className={`${loading ? "loading" : ""} ${errorOccured ? "error" : ""}`}
                 style={{fontFamily:'monospace', display:'inline-block'}}
             >
                 {statusText}
             </p>
-            <ProgressBar progress={progress} />
+            { errorOccured ? <></> : <ProgressBar progress={progress} /> } 
         </div>
     )
 }

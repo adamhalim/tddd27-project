@@ -8,6 +8,10 @@
     margin-top: 3em;
 }
 
+.upload-progress-container .error {
+    color: red;
+}
+
 .upload-progress-container .loading {
     clip-path: inset(0 3ch 0 0);
     animation: l 1.5s steps(4) infinite;

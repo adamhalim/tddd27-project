@@ -6,6 +6,14 @@ import UploadProgress from '../UploadProgress';
 import { useAuth0 } from '@auth0/auth0-react';
 
 
+const ALLOWED_FILETYES = [
+    "video/mp4",        // MPEG-4 .mp4
+    "video/x-msvideo",  // A/V .avi
+    "video/x-ms-wmv",   // Windows Media.wmv
+    "video/quicktime"   // Quicktime .mov
+]
+
+
 const UploadButton = () => {
 
     const { getAccessTokenSilently, getAccessTokenWithPopup, user } = useAuth0();
@@ -19,16 +27,15 @@ const UploadButton = () => {
     }
 
 
-    const [fileTooLarge, setFileTooLarge] = useState(false);
     const [progress, setProgress] = useState(0);
     const [uploadInProgress, setUploadInProgress] = useState(false);
+    const [errorOccured, setErrorOccured] = useState(false);
     const [fileName, setFileName] = useState("")
-    const [uploadFailed, setUploadFailed] = useState(false);
     const [statusText, setStatusText] = useState("");
     const [loading, setLoading] = useState(false)
 
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFileTooLarge(false);
+        setErrorOccured(false);
         setProgress(0);
         setStatusText("")
         const file = e.target.files?.item(0);
@@ -38,6 +45,13 @@ const UploadButton = () => {
             setStatusText("Uploading file...")
             setLoading(true);
             setFileName(file.name)
+
+            if (!ALLOWED_FILETYES.includes(file.type)) {
+                setLoading(false)
+                setErrorOccured(true)
+                setStatusText(`filetype ${file.type} not allowed!`)
+                return
+            }
 
             const accessToken = await getAccessTokenSilently({ audience: 'http://localhost:3000/' })
                 .then((res) => {
@@ -55,8 +69,8 @@ const UploadButton = () => {
             const CHUNK_SIZE = parseInt(chunkSize)
 
             if (file.size > MAX_FILESIZE) {
-                setFileTooLarge(true);
-                console.error("file size too large")
+                setErrorOccured(true)
+                setStatusText(`File size of ${file.size / 1e6}MB greaer than maximum ${MAX_FILESIZE / 1e6}MB`)
                 return;
             }
 
@@ -69,7 +83,9 @@ const UploadButton = () => {
                 if (success) {
                     setProgress(((chunk + 1) / chunkCount) * 100)
                 } else {
-                    setUploadFailed(true);
+                    // TODO: set error response from uploadChuck
+                    setErrorOccured(true)
+                    setStatusText("error occured during upload");
                     return;
                 }
             }
@@ -162,7 +178,7 @@ const UploadButton = () => {
                 id='upload-button'
             />
             {
-                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} />
+                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} errorOccured={errorOccured} />
             }
         </div>
     )
