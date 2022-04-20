@@ -19,6 +19,7 @@ type downloadSession struct {
 	chunks           []*chunkFile
 	originalFileName string
 	fileExtension    string
+	uid              string
 }
 
 var (
@@ -31,7 +32,7 @@ func init() {
 	sessionLock = &sync.Mutex{}
 }
 
-func newSession(chunkName string, fileName string) error {
+func NewSession(chunkName string, fileName string, uid string) error {
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
 	if _, ok := sessions[chunkName]; ok {
@@ -50,6 +51,7 @@ func newSession(chunkName string, fileName string) error {
 		chunks:           make([]*chunkFile, 0),
 		originalFileName: fileName,
 		fileExtension:    fileExtension,
+		uid:              uid,
 	}
 
 	return nil
