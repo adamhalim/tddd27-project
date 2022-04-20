@@ -9,7 +9,7 @@ import (
 
 // This file handles current file downloads
 
-type DownloadSession struct {
+type downloadSession struct {
 	chunkCount       int
 	totalSize        int
 	lock             *sync.Mutex
@@ -22,12 +22,12 @@ type DownloadSession struct {
 }
 
 var (
-	sessions    map[string]*DownloadSession
+	sessions    map[string]*downloadSession
 	sessionLock *sync.Mutex
 )
 
 func init() {
-	sessions = make(map[string]*DownloadSession)
+	sessions = make(map[string]*downloadSession)
 	sessionLock = &sync.Mutex{}
 }
 
@@ -40,7 +40,7 @@ func newSession(chunkName string, fileName string) error {
 
 	fileExtension := filepath.Ext(fileName)
 
-	sessions[chunkName] = &DownloadSession{
+	sessions[chunkName] = &downloadSession{
 		chunkCount:       0,
 		totalSize:        0,
 		lock:             &sync.Mutex{},
@@ -55,7 +55,7 @@ func newSession(chunkName string, fileName string) error {
 	return nil
 }
 
-func (s *DownloadSession) addChunk(chunk *chunkFile) error {
+func (s *downloadSession) addChunk(chunk *chunkFile) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	if s.chunkCount >= maxChunkCount {
@@ -68,7 +68,7 @@ func (s *DownloadSession) addChunk(chunk *chunkFile) error {
 	return nil
 }
 
-func GetSession(chunkName string) (*DownloadSession, error) {
+func getSession(chunkName string) (*downloadSession, error) {
 	if _, ok := sessions[chunkName]; !ok {
 		return nil, fmt.Errorf("no session for %s exists", chunkName)
 	}

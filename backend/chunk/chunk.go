@@ -44,7 +44,7 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		}
 	}
 
-	session, err := GetSession(chunkName)
+	session, err := getSession(chunkName)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -67,32 +67,35 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 }
 
 // Combine all chunks for a session into a single result file
-func CombineChunks(session *DownloadSession) (fileName string, directory string, err error) {
-	defer delete(sessions, session.chunkName)
+func CombineChunks(chunkName string) (fileName string, directory string, originalFileName string, err error) {
+	session, err := getSession(chunkName)
+	if err != nil {
+		return "", "", "", err
+	}
 
 	resultFileName := fmt.Sprintf("%s_%s", session.chunkName, session.originalFileName)
 	resultFile, err := os.Create(session.directory + "/" + resultFileName)
 	defer resultFile.Close()
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	for _, chunk := range session.chunks {
 		byteFile, err := ioutil.ReadFile(chunk.FileName)
 		if err != nil {
-			return "", "", err
+			return "", "", "", err
 		}
 		_, err = resultFile.Write(byteFile)
 		if err != nil {
-			return "", "", err
+			return "", "", "", err
 		}
 		err = os.Remove(chunk.FileName)
 		if err != nil {
-			return "", "", err
+			return "", "", "", err
 		}
 	}
 
-	return resultFile.Name(), session.directory, nil
+	return resultFile.Name(), session.directory, session.originalFileName, nil
 }
 
 func createDirectory(filename string) error {
