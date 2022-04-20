@@ -72,6 +72,7 @@ func CombineChunks(chunkName string) (fileName string, directory string, origina
 	if err != nil {
 		return "", "", "", err
 	}
+	defer session.RemoveSession()
 
 	resultFileName := fmt.Sprintf("%s_%s", session.chunkName, session.originalFileName)
 	resultFile, err := os.Create(session.directory + "/" + resultFileName)

@@ -75,3 +75,8 @@ func getSession(chunkName string) (*downloadSession, error) {
 	session := sessions[chunkName]
 	return session, nil
 }
+
+func (session *downloadSession) RemoveSession() {
+	// TODO: Also do cleanup here?
+	delete(sessions, session.chunkName)
+}
