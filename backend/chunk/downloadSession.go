@@ -60,7 +60,7 @@ func NewSession(chunkName string, fileName string, uid string) error {
 func (s *downloadSession) addChunk(chunk *chunkFile) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	if s.chunkCount >= maxChunkCount {
+	if s.chunkCount > maxChunkCount {
 		// TODO: Run cleanup here
 		return fmt.Errorf("file too large. maximum # chunks is %d", maxChunkCount)
 	}
