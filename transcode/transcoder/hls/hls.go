@@ -4,6 +4,7 @@ import (
 	"os"
 
 	h "github.com/rendyfebry/go-hls-transcoder"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/db"
 )
 
 const (
@@ -33,5 +34,7 @@ func TranscodeToHLS(fileName string, originalFileName string, dir string) error 
 			return err
 		}
 	}
+
+	db.AddAllFilesFromDirectory(originalFileName, dir)
 	return nil
 }
