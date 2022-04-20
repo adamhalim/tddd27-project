@@ -33,17 +33,6 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 		// TOOD: Do cleanup
 		return fmt.Errorf("chunk size greater than %db", ChunkSize)
 	}
-	// New empty directory created at tmp/chunkName/
-	if id == "0" {
-		if err := createDirectory(chunkName); err != nil {
-			return err
-		}
-		if err := newSession(chunkName, filename); err != nil {
-			// Terminate all future entries with this chunkName?
-			return err
-		}
-	}
-
 	session, err := getSession(chunkName)
 	if err != nil {
 		fmt.Println(err.Error())
