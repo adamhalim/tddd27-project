@@ -80,7 +80,7 @@ func addFile(fileName string, filePath string, originalFileName string, uid stri
 	if _, err := getMinioClient().FPutObject(context.Background(), bucketName, fileName, filePath, minio.PutObjectOptions{
 		ContentType: "application/video",
 		UserMetadata: map[string]string{
-			"originalFileNale": originalFileName,
+			"originalFileName": originalFileName,
 			"uid":              uid,
 		},
 	}); err != nil {
