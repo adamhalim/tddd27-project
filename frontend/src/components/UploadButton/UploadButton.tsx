@@ -10,7 +10,9 @@ const ALLOWED_FILETYES = [
     "video/mp4",        // MPEG-4 .mp4
     "video/x-msvideo",  // A/V .avi
     "video/x-ms-wmv",   // Windows Media.wmv
-    "video/quicktime"   // Quicktime .mov
+    "video/quicktime",   // Quicktime .mov
+    "video/avi",
+    "video/x-flv"
 ]
 
 
