@@ -70,7 +70,8 @@ const UploadButton = () => {
 
             if (file.size > MAX_FILESIZE) {
                 setErrorOccured(true)
-                setStatusText(`File size of ${file.size / 1e6}MB greaer than maximum ${MAX_FILESIZE / 1e6}MB`)
+                setLoading(false)
+                setStatusText(`File size of ${(file.size / 1e6).toFixed(1)} MB greaer than maximum ${(MAX_FILESIZE / 1e6).toFixed(1)}MB`)
                 return;
             }
 
@@ -85,6 +86,7 @@ const UploadButton = () => {
                 } else {
                     // TODO: set error response from uploadChuck
                     setErrorOccured(true)
+                    setLoading(false)
                     setStatusText("error occured during upload");
                     return;
                 }
