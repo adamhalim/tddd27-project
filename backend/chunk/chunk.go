@@ -88,7 +88,7 @@ func CombineChunks(chunkName string) (fileName string, directory string, origina
 	return resultFile.Name(), session.directory, session.originalFileName, session.uid, nil
 }
 
-func createDirectory(filename string) error {
+func CreateDirectory(filename string) error {
 	if err := fileExists(tmpChunkDir + filename); err != nil {
 		return err
 	}
