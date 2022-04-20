@@ -55,7 +55,7 @@ func postVideo(c *gin.Context) {
 	}
 
 	// Run FFMPEG
-	err = hls.TranscodeToHLS(fileName, dir)
+	err = hls.TranscodeToHLS(fileName, originalFileName, dir)
 	if err != nil {
 		internalError(c, err)
 		return
