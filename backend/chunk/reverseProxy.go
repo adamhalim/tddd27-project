@@ -36,7 +36,7 @@ func ForwardVideoToTranscoder(fileName string) error {
 	}
 
 	writer.Close()
-	req, err := http.NewRequest("POST", transcoderUrl, bytes.NewReader(body.Bytes()))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s?originalFileName=%s", transcoderUrl, url.QueryEscape(originalFileName)), bytes.NewReader(body.Bytes()))
 	if err != nil {
 		return err
 	}
