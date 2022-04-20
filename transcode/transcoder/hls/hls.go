@@ -10,7 +10,7 @@ const (
 	ffmpegPath = "ffmpeg"
 )
 
-func TranscodeToHLS(fileName string, dir string) error {
+func TranscodeToHLS(fileName string, originalFileName string, dir string) error {
 
 	targetPath := dir + "/hls"
 	// TODO: Check source video res first and ignore resolutions greater than source

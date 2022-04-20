@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -13,7 +14,7 @@ const (
 	transcoderUrl = "http://localhost:8081/api/transcode"
 )
 
-func ForwardVideoToTranscoder(fileName string) error {
+func ForwardVideoToTranscoder(fileName string, originalFileName string) error {
 	// TODO: Might be worth to do this with gin instead of standard library
 	// Uses multipart to upload file as chunks to transcoder
 	client := &http.Client{}
