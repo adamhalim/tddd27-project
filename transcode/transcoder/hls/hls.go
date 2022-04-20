@@ -11,7 +11,7 @@ const (
 	ffmpegPath = "ffmpeg"
 )
 
-func TranscodeToHLS(fileName string, originalFileName string, dir string) error {
+func TranscodeToHLS(fileName string, originalFileName string, dir string, uid string) error {
 
 	targetPath := dir + "/hls"
 	// TODO: Check source video res first and ignore resolutions greater than source
@@ -35,6 +35,6 @@ func TranscodeToHLS(fileName string, originalFileName string, dir string) error 
 		}
 	}
 
-	db.AddAllFilesFromDirectory(originalFileName, dir)
+	db.AddAllFilesFromDirectory(originalFileName, dir, uid)
 	return nil
 }

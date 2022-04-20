@@ -58,7 +58,7 @@ const (
 	bucketName = "videos"
 )
 
-func AddAllFilesFromDirectory(originalFileName string, dir string) error {
+func AddAllFilesFromDirectory(originalFileName string, dir string, uid string) error {
 	dirName := removeFileNameFromDirectory(dir)
 	// HLS files are stored in tmp/chunkname_originalFilename/hls
 	filepath.Walk(dir+"/hls", func(path string, info fs.FileInfo, err error) error {
@@ -66,7 +66,7 @@ func AddAllFilesFromDirectory(originalFileName string, dir string) error {
 			return nil
 		}
 		// We add all files to the bucket at chunkName/file.ts
-		addFile(dirName+"/"+info.Name(), path, originalFileName)
+		addFile(dirName+"/"+info.Name(), path, originalFileName, uid)
 		return nil
 	})
 	return nil
@@ -76,10 +76,13 @@ func removeFileNameFromDirectory(dir string) string {
 	return strings.SplitN(dir, "_", 2)[0][4:]
 }
 
-func addFile(fileName string, filePath string, originalFileName string) error {
+func addFile(fileName string, filePath string, originalFileName string, uid string) error {
 	if _, err := getMinioClient().FPutObject(context.Background(), bucketName, fileName, filePath, minio.PutObjectOptions{
-		ContentType:  "application/video",
-		UserMetadata: map[string]string{"originalFileNale": originalFileName},
+		ContentType: "application/video",
+		UserMetadata: map[string]string{
+			"originalFileNale": originalFileName,
+			"uid":              uid,
+		},
 	}); err != nil {
 		return err
 	}
