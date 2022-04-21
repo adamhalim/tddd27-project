@@ -4,13 +4,14 @@ import (
 	"os"
 
 	h "github.com/rendyfebry/go-hls-transcoder"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/db"
 )
 
 const (
 	ffmpegPath = "ffmpeg"
 )
 
-func TranscodeToHLS(fileName string, dir string) error {
+func TranscodeToHLS(fileName string, originalFileName string, dir string, uid string) error {
 
 	targetPath := dir + "/hls"
 	// TODO: Check source video res first and ignore resolutions greater than source
@@ -33,5 +34,7 @@ func TranscodeToHLS(fileName string, dir string) error {
 			return err
 		}
 	}
+
+	db.AddAllFilesFromDirectory(originalFileName, dir, uid)
 	return nil
 }

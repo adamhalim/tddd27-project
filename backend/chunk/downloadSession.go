@@ -19,6 +19,7 @@ type downloadSession struct {
 	chunks           []*chunkFile
 	originalFileName string
 	fileExtension    string
+	uid              string
 }
 
 var (
@@ -31,7 +32,7 @@ func init() {
 	sessionLock = &sync.Mutex{}
 }
 
-func newSession(chunkName string, fileName string) error {
+func NewSession(chunkName string, fileName string, uid string) error {
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
 	if _, ok := sessions[chunkName]; ok {
@@ -50,6 +51,7 @@ func newSession(chunkName string, fileName string) error {
 		chunks:           make([]*chunkFile, 0),
 		originalFileName: fileName,
 		fileExtension:    fileExtension,
+		uid:              uid,
 	}
 
 	return nil
@@ -58,7 +60,7 @@ func newSession(chunkName string, fileName string) error {
 func (s *downloadSession) addChunk(chunk *chunkFile) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	if s.chunkCount >= maxChunkCount {
+	if s.chunkCount > maxChunkCount {
 		// TODO: Run cleanup here
 		return fmt.Errorf("file too large. maximum # chunks is %d", maxChunkCount)
 	}
@@ -74,4 +76,9 @@ func getSession(chunkName string) (*downloadSession, error) {
 	}
 	session := sessions[chunkName]
 	return session, nil
+}
+
+func (session *downloadSession) RemoveSession() {
+	// TODO: Also do cleanup here?
+	delete(sessions, session.chunkName)
 }

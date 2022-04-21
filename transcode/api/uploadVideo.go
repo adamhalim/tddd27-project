@@ -1,9 +1,11 @@
 package api
 
 import (
+	"errors"
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -32,8 +34,19 @@ func init() {
 // Could be exported and wrapped in an AWS lambda.
 func postVideo(c *gin.Context) {
 	err := c.Request.ParseMultipartForm(maxMemory)
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
 	if err != nil {
 		internalError(c, err)
+		return
+	}
+	originalFileName := queryParams["originalFileName"][0]
+	if originalFileName == "" {
+		internalError(c, errors.New("no originalFileName provided"))
+		return
+	}
+	uid := queryParams["uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
 		return
 	}
 
@@ -54,7 +67,7 @@ func postVideo(c *gin.Context) {
 	}
 
 	// Run FFMPEG
-	err = hls.TranscodeToHLS(fileName, dir)
+	err = hls.TranscodeToHLS(fileName, originalFileName, dir, uid)
 	if err != nil {
 		internalError(c, err)
 		return
