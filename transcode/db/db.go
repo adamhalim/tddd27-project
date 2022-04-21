@@ -6,11 +6,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+
+	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/fileutil"
 )
 
 var (
@@ -59,7 +60,7 @@ const (
 )
 
 func AddAllFilesFromDirectory(originalFileName string, dir string, uid string) error {
-	dirName := removeFileNameFromDirectory(dir)
+	dirName := fileutil.RemoveFileNameFromDirectory(dir)
 	// HLS files are stored in tmp/chunkname_originalFilename/hls
 	filepath.Walk(dir+"/hls", func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
@@ -70,10 +71,6 @@ func AddAllFilesFromDirectory(originalFileName string, dir string, uid string) e
 		return nil
 	})
 	return nil
-}
-
-func removeFileNameFromDirectory(dir string) string {
-	return strings.SplitN(dir, "_", 2)[0][4:]
 }
 
 func AddFile(fileName string, filePath string, originalFileName string, uid string) error {
