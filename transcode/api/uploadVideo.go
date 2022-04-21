@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/transcoder/hls"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/transcoder/h264"
 )
 
 const (
@@ -67,7 +67,7 @@ func postVideo(c *gin.Context) {
 	}
 
 	// Run FFMPEG
-	err = hls.TranscodeToHLS(fileName, originalFileName, dir, uid)
+	err = h264.TranscodeToh264(fileName, originalFileName, dir, uid)
 	if err != nil {
 		internalError(c, err)
 		return
