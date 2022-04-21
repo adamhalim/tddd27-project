@@ -35,9 +35,8 @@ func handleRequests() {
 	authorized := r.Group(ApiPath + "auth/")
 	authorized.Use(gin.WrapH(middleware.EnsureValidToken()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-		claims := token.CustomClaims.(*middleware.CustomClaims)
-		if claims != nil {
-
+		if err := middleware.HandleChunkUpload(r, token); err != nil {
+			http.Error(w, fmt.Sprintf("error: %s", err.Error()), 400)
 		}
 	}))))
 	{
