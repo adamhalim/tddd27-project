@@ -3,14 +3,14 @@ package chunk
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
 const (
 	tmpChunkDir   = "tmp/"
-	oneMB         = 1_048_576
-	MaxFileSize   = 200 * oneMB
-	ChunkSize     = 5 * oneMB
+	MaxFileSize   = 200 << 20
+	ChunkSize     = 32 << 20
 	maxChunkCount = MaxFileSize / ChunkSize
 )
 
@@ -20,22 +20,19 @@ type chunkFile struct {
 	FileName string
 }
 
+func init() {
+	os.RemoveAll("tmp/")
+	err := os.MkdirAll("tmp/", os.ModeDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func CreateChunk(chunk []byte, id string, filename string, chunkName string) error {
 	if len(chunk) > ChunkSize {
 		// TOOD: Do cleanup
 		return fmt.Errorf("chunk size greater than %db", ChunkSize)
 	}
-	// New empty directory created at tmp/chunkName/
-	if id == "0" {
-		if err := createDirectory(chunkName); err != nil {
-			return err
-		}
-		if err := newSession(chunkName, filename); err != nil {
-			// Terminate all future entries with this chunkName?
-			return err
-		}
-	}
-
 	session, err := getSession(chunkName)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -59,39 +56,39 @@ func CreateChunk(chunk []byte, id string, filename string, chunkName string) err
 }
 
 // Combine all chunks for a session into a single result file
-func CombineChunks(chunkName string) error {
+func CombineChunks(chunkName string) (fileName string, directory string, originalFileName string, uid string, err error) {
 	session, err := getSession(chunkName)
 	if err != nil {
-		return err
+		return "", "", "", "", err
 	}
-	defer delete(sessions, chunkName)
+	defer session.RemoveSession()
 
 	resultFileName := fmt.Sprintf("%s_%s", session.chunkName, session.originalFileName)
 	resultFile, err := os.Create(session.directory + "/" + resultFileName)
 	defer resultFile.Close()
 	if err != nil {
-		return err
+		return "", "", "", "", err
 	}
 
 	for _, chunk := range session.chunks {
 		byteFile, err := ioutil.ReadFile(chunk.FileName)
 		if err != nil {
-			return err
+			return "", "", "", "", err
 		}
 		_, err = resultFile.Write(byteFile)
 		if err != nil {
-			return err
+			return "", "", "", "", err
 		}
 		err = os.Remove(chunk.FileName)
 		if err != nil {
-			return err
+			return "", "", "", "", err
 		}
 	}
 
-	return nil
+	return resultFile.Name(), session.directory, session.originalFileName, session.uid, nil
 }
 
-func createDirectory(filename string) error {
+func CreateDirectory(filename string) error {
 	if err := fileExists(tmpChunkDir + filename); err != nil {
 		return err
 	}

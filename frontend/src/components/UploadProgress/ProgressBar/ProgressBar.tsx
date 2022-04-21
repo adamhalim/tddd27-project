@@ -6,7 +6,7 @@ const ProgressBar = ({ progress }: ProgressBarType) => {
     const wrapperStyle = {
         height: '100%',
         width: `${progress}%`,
-        backgroundColor: '#af1f1f',
+        backgroundColor: '#558B2F',
         textAlign: 'right' as 'right',
         borderRadius: 10
     }
