@@ -10,7 +10,9 @@ const ALLOWED_FILETYES = [
     "video/mp4",        // MPEG-4 .mp4
     "video/x-msvideo",  // A/V .avi
     "video/x-ms-wmv",   // Windows Media.wmv
-    "video/quicktime"   // Quicktime .mov
+    "video/quicktime",   // Quicktime .mov
+    "video/avi",
+    "video/x-flv"
 ]
 
 
@@ -70,7 +72,8 @@ const UploadButton = () => {
 
             if (file.size > MAX_FILESIZE) {
                 setErrorOccured(true)
-                setStatusText(`File size of ${file.size / 1e6}MB greaer than maximum ${MAX_FILESIZE / 1e6}MB`)
+                setLoading(false)
+                setStatusText(`File size of ${(file.size / 1e6).toFixed(1)} MB greaer than maximum ${(MAX_FILESIZE / 1e6).toFixed(1)}MB`)
                 return;
             }
 
@@ -85,6 +88,7 @@ const UploadButton = () => {
                 } else {
                     // TODO: set error response from uploadChuck
                     setErrorOccured(true)
+                    setLoading(false)
                     setStatusText("error occured during upload");
                     return;
                 }
