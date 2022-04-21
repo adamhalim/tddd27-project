@@ -16,6 +16,7 @@ func TranscodeToh264(fileName string, originalFileName string, dir string, uid s
 		ErrorToStdOut().
 		Run()
 
-	db.AddFile(fileutil.RemoveFileNameFromDirectory(dir)+"/"+fileutil.RemoveFileNameFromDirectory(dir)+".mp4", outputFileName, originalFileName, uid)
+	dirName := fileutil.RemoveFileNameFromDirectory(dir)
+	db.AddFile(dirName+"/"+"video"+".mp4", outputFileName, originalFileName, uid)
 	return nil
 }
