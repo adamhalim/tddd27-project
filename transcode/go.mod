@@ -48,6 +48,6 @@ require (
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
 
-replace github.com/rendyfebry/go-hls-transcoder@master => github.com/erzed/go-hls-transcoder v1.0.4-0.20220401064654-fc791673af1f // indirect
+replace github.com/rendyfebry/go-hls-transcoder => github.com/erzed/go-hls-transcoder v1.0.4-0.20220401064654-fc791673af1f // indirect
 
 replace gitlab.liu.se/adaab301/tddd27_2022_project/lib => ../lib
