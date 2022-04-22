@@ -22,6 +22,7 @@ require (
 	github.com/stretchr/testify v1.7.1 // indirect
 	github.com/u2takey/ffmpeg-go v0.4.1 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
+	gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
@@ -48,3 +49,5 @@ require (
 )
 
 replace github.com/rendyfebry/go-hls-transcoder => github.com/erzed/go-hls-transcoder v1.0.4-0.20220401064654-fc791673af1f // indirect
+
+replace gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore => ../lib/objectstore

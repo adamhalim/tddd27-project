@@ -4,7 +4,7 @@ import (
 	"os"
 
 	h "github.com/rendyfebry/go-hls-transcoder"
-	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/upload"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
 )
 
 const (
@@ -35,6 +35,6 @@ func TranscodeToHLS(fileName string, originalFileName string, dir string, uid st
 		}
 	}
 
-	upload.FilesFromDirectory(originalFileName, dir, uid)
+	objectstore.FilesFromDirectory(originalFileName, dir, uid)
 	return nil
 }
