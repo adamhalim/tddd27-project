@@ -39,7 +39,7 @@ func init() {
 	}
 
 	secretAccessKey = os.Getenv("SECRET_ACCESS_KEY")
-	if accessKeyID == "" {
+	if secretAccessKey == "" {
 		log.Fatal("no SECRET_ACCESS_KEY in .env")
 	}
 }
