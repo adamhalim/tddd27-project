@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
 )
@@ -19,10 +17,13 @@ const (
 
 func getVideo(c *gin.Context) {
 	chunkName := c.Query("chunkName")
-	url, err := objectstore.GetVideo(chunkName)
+	url, err := objectstore.GetVideoURL(chunkName)
 	if err != nil {
 		internalError(c, err)
+		return
 	}
 
-	fmt.Printf("%v", url)
+	c.JSON(200, gin.H{
+		"url": url.String(),
+	})
 }
