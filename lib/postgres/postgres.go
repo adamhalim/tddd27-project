@@ -69,7 +69,7 @@ func createTables() {
 		CREATE TABLE IF NOT EXISTS videos (
 			chunkname VARCHAR(36) NOT NULL,
 			lastViewed NUMERIC(11,0) NOT NULL,
-			uid VARCHAR(50) NOT NULL,
+			uid VARCHAR(50),
 			FOREIGN KEY(uid) REFERENCES users(uid),
 			CONSTRAINT pk_chunkname PRIMARY KEY(chunkname)
 		)
@@ -120,7 +120,12 @@ func AddVideo(video Video) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(video.Chunkname, video.LastViewed, video.Uid)
+
+	if video.Uid == "" {
+		_, err = stmt.Exec(video.Chunkname, video.LastViewed, nil)
+	} else {
+		_, err = stmt.Exec(video.Chunkname, video.LastViewed, video.Uid)
+	}
 	if err != nil {
 		return err
 	}
