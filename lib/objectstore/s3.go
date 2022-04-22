@@ -34,12 +34,12 @@ func init() {
 	}
 
 	accessKeyID = os.Getenv("ACCESS_KEY")
-	if endpoint == "" {
+	if accessKeyID == "" {
 		log.Fatal("no ACCESS_KEY in .env")
 	}
 
 	secretAccessKey = os.Getenv("SECRET_ACCESS_KEY")
-	if endpoint == "" {
+	if accessKeyID == "" {
 		log.Fatal("no SECRET_ACCESS_KEY in .env")
 	}
 }
