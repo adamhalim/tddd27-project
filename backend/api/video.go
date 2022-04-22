@@ -1,16 +1,14 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
 )
 
 var (

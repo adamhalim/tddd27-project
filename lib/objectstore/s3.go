@@ -2,16 +2,18 @@ package objectstore
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-
-	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/fileutil"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
 )
 
 var (

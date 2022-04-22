@@ -47,7 +47,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/smartystreets/assertions v1.2.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres v0.0.0-00010101000000-000000000000 // indirect
+	gitlab.liu.se/adaab301/tddd27_2022_project/lib v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sys v0.0.0-20220408201424-a24fb2fb8a0f // indirect
@@ -59,4 +59,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres => ../lib/postgres
+replace gitlab.liu.se/adaab301/tddd27_2022_project/lib => ../lib
+

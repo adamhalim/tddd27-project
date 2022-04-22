@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
-	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/fileutil"
 )
 
 func TranscodeToh264(fileName string, originalFileName string, dir string, uid string) error {
