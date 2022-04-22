@@ -29,9 +29,15 @@ func uploadVideoChunk(c *gin.Context) {
 func combineChunks(c *gin.Context) {
 	chunkName := c.Query("chunkName")
 	fileName, directory, originalFileName, uid, err := chunk.CombineChunks(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
 	err = chunk.ForwardVideoToTranscoder(fileName, originalFileName, uid)
 	if err != nil {
 		internalError(c, err)
+		return
+	}
 	}
 	os.RemoveAll(directory)
 }
