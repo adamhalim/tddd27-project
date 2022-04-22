@@ -15,7 +15,6 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -23,10 +22,6 @@ var (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 	auth0Domain = os.Getenv("AUTH0_DOMAIN")
 	if auth0Domain == "" {
 		log.Fatal("no AUTH0_DOMAIN in .env")

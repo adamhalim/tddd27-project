@@ -1,17 +1,19 @@
-package db
+package objectstore
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-
-	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/fileutil"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
 )
 
 var (
@@ -32,12 +34,12 @@ func init() {
 	}
 
 	accessKeyID = os.Getenv("ACCESS_KEY")
-	if endpoint == "" {
+	if accessKeyID == "" {
 		log.Fatal("no ACCESS_KEY in .env")
 	}
 
 	secretAccessKey = os.Getenv("SECRET_ACCESS_KEY")
-	if endpoint == "" {
+	if secretAccessKey == "" {
 		log.Fatal("no SECRET_ACCESS_KEY in .env")
 	}
 }
@@ -59,7 +61,7 @@ const (
 	bucketName = "videos"
 )
 
-func AddAllFilesFromDirectory(originalFileName string, dir string, uid string) error {
+func FilesFromDirectory(originalFileName string, dir string, uid string) error {
 	dirName := fileutil.RemoveFileNameFromDirectory(dir)
 	// HLS files are stored in tmp/chunkname_originalFilename/hls
 	filepath.Walk(dir+"/hls", func(path string, info fs.FileInfo, err error) error {
@@ -67,13 +69,13 @@ func AddAllFilesFromDirectory(originalFileName string, dir string, uid string) e
 			return nil
 		}
 		// We add all files to the bucket at chunkName/file.ts
-		AddFile(dirName+"/"+info.Name(), path, originalFileName, uid)
+		FiletoDB(dirName+"/"+info.Name(), path, originalFileName, uid)
 		return nil
 	})
 	return nil
 }
 
-func AddFile(fileName string, filePath string, originalFileName string, uid string) error {
+func FiletoDB(fileName string, filePath string, originalFileName string, uid string) error {
 	if _, err := getMinioClient().FPutObject(context.Background(), bucketName, fileName, filePath, minio.PutObjectOptions{
 		ContentType: "application/video",
 		UserMetadata: map[string]string{
@@ -84,4 +86,14 @@ func AddFile(fileName string, filePath string, originalFileName string, uid stri
 		return err
 	}
 	return nil
+}
+
+func GetVideoURL(chunkName string) (*url.URL, error) {
+	reqParams := make(url.Values)
+	reqParams.Set("response-content-disposition", fmt.Sprintf("attachment; filename=\"%s/video.mp4\"", chunkName))
+	u, err := getMinioClient().PresignedGetObject(context.Background(), bucketName, chunkName+"/video.mp4", time.Hour*1, reqParams)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
 }
