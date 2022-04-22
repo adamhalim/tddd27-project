@@ -87,3 +87,13 @@ func FiletoDB(fileName string, filePath string, originalFileName string, uid str
 	}
 	return nil
 }
+
+func GetVideoURL(chunkName string) (*url.URL, error) {
+	reqParams := make(url.Values)
+	reqParams.Set("response-content-disposition", fmt.Sprintf("attachment; filename=\"%s/video.mp4\"", chunkName))
+	u, err := getMinioClient().PresignedGetObject(context.Background(), bucketName, chunkName+"/video.mp4", time.Hour*1, reqParams)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
