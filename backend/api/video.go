@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -25,11 +24,6 @@ const (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
 	endpoint = os.Getenv("DB_ENDPOINT")
 	if endpoint == "" {
 		log.Fatal("no DB_ENDPOINT in .env")
