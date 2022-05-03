@@ -22,7 +22,7 @@ const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured,
                 {statusText}
             </p>
             { errorOccured ? <></> : <ProgressBar progress={progress} /> } 
-            { videoURL && <p>Link to video: <Link to={videoURL}>{videoURL}</Link></p>}
+            { videoURL && <p>Link to video: <Link to={videoURL}>{window.location.origin}{videoURL}</Link></p>}
         </div>
     )
 }
