@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ProgressBar from './ProgressBar'
 import './style.css'
 
@@ -7,9 +8,10 @@ type UploadProgressType = {
     statusText: string,
     loading: boolean,
     errorOccured: boolean,
+    videoURL: string,
 }
 
-const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured }: UploadProgressType) => {
+const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured, videoURL }: UploadProgressType) => {
     return (
         <div className='upload-progress-container'>
             <p>filename: {fileName}</p>
@@ -20,6 +22,7 @@ const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured 
                 {statusText}
             </p>
             { errorOccured ? <></> : <ProgressBar progress={progress} /> } 
+            { videoURL && <p>Link to video: <Link to={videoURL}>{videoURL}</Link></p>}
         </div>
     )
 }
