@@ -15,11 +15,7 @@ type UploadProgressType = {
 }
 
 const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured, chunkName }: UploadProgressType) => {
-
     const [videoSrc, setVideoSrc] = useState("")
-
-    useEffect(() => {
-    }, [loading])
 
     const videoLink = `/video/${chunkName}`
 
