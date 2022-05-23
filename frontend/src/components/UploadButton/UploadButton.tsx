@@ -39,13 +39,13 @@ const UploadButton = () => {
     const [fileName, setFileName] = useState("")
     const [statusText, setStatusText] = useState("");
     const [loading, setLoading] = useState(false);
-    const [videoURL, setVideoURL] = useState("");
+    const [chunkName, setChunkName] = useState("");
 
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setErrorOccured(false);
         setProgress(0);
         setStatusText("")
-        setVideoURL("");
+        setChunkName("");
         const file = e.target.files?.item(0);
 
         if (file) {
@@ -110,7 +110,7 @@ const UploadButton = () => {
             setLoading(false)
             if (transcodeStatus) {
                 setStatusText("Transcoding complete!")
-                setVideoURL(generatevideoURL(chunkName))
+                setChunkName(chunkName)
             } else {
                 setStatusText("Transcoding failed...")
             }
@@ -189,7 +189,7 @@ const UploadButton = () => {
                 id='upload-button'
             />
             {
-                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} errorOccured={errorOccured} videoURL={videoURL} />
+                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} errorOccured={errorOccured} chunkName={chunkName} />
             }
         </div>
     )
