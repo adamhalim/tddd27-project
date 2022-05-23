@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { fetchVideoURL } from '../../lib/fetchVideoURL'
+import VideoTrimmer from '../VideoTrimmer'
 import ProgressBar from './ProgressBar'
 import './style.css'
 
@@ -8,21 +11,38 @@ type UploadProgressType = {
     statusText: string,
     loading: boolean,
     errorOccured: boolean,
-    videoURL: string,
+    chunkName: string,
 }
 
-const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured, videoURL }: UploadProgressType) => {
+const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured, chunkName }: UploadProgressType) => {
+
+    const [videoSrc, setVideoSrc] = useState("")
+
+    useEffect(() => {
+    }, [loading])
+
+    const videoLink = `/video/${chunkName}`
+
+    useEffect(() => {
+        if (chunkName) {
+            fetchVideoURL(chunkName).then((url) => {
+                setVideoSrc(url as string)
+            })
+        }
+    }, [chunkName])
+
     return (
         <div className='upload-progress-container'>
             <p>filename: {fileName}</p>
-            <p 
+            <p
                 className={`${loading ? "loading" : ""} ${errorOccured ? "error" : ""}`}
-                style={{fontFamily:'monospace', display:'inline-block'}}
+                style={{ fontFamily: 'monospace', display: 'inline-block' }}
             >
                 {statusText}
             </p>
-            { errorOccured ? <></> : <ProgressBar progress={progress} /> } 
-            { videoURL && <p>Link to video: <Link to={videoURL}>{window.location.origin}{videoURL}</Link></p>}
+            {errorOccured ? <></> : <ProgressBar progress={progress} />}
+            {chunkName && <p>Link to video: <Link to={videoLink}>{window.location.origin}{videoLink}</Link></p>}
+            {chunkName && <VideoTrimmer videoSrc={videoSrc} fileName={fileName} />}
         </div>
     )
 }
