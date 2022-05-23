@@ -41,11 +41,14 @@ const UploadButton = () => {
     const [loading, setLoading] = useState(false);
     const [chunkName, setChunkName] = useState("");
 
+    let transcodeFinished = false
+    
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setErrorOccured(false);
         setProgress(0);
         setStatusText("")
         setChunkName("");
+        transcodeFinished = false
         const file = e.target.files?.item(0);
 
         if (file) {
@@ -102,12 +105,15 @@ const UploadButton = () => {
             setLoading(false)
             setStatusText("Upload complete!")
             setTimeout(() => {
-                setStatusText("Transcoding file...")
-                setLoading(true)
+                if (!transcodeFinished) {
+                    setStatusText("Transcoding file...")
+                    setLoading(true)
+                }
             },3000)
 
             const transcodeStatus = await allChunksUploaded(chunkName, accessToken)
             setLoading(false)
+            transcodeFinished = true
             if (transcodeStatus) {
                 setStatusText("Transcoding complete!")
                 setChunkName(chunkName)
