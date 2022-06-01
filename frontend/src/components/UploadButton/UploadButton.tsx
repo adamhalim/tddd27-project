@@ -15,6 +15,10 @@ const ALLOWED_FILETYES = [
     "video/x-flv"
 ]
 
+const generatevideoURL = (chunkName: string): string => {
+    return `/video/${chunkName}`
+}
+
 
 const UploadButton = () => {
 
@@ -34,12 +38,25 @@ const UploadButton = () => {
     const [errorOccured, setErrorOccured] = useState(false);
     const [fileName, setFileName] = useState("")
     const [statusText, setStatusText] = useState("");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [chunkName, setChunkName] = useState("");
+    const [videoSaved, setVideoSaved] = useState(false);
+    const [accessToken, setAccessToken] = useState("")
 
+
+    let transcodeFinished = false
+    
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setErrorOccured(false);
-        setProgress(0);
+        setProgress(0)
+        setUploadInProgress(false)
+        setErrorOccured(false)
+        setFileName("")
         setStatusText("")
+        setLoading(false)
+        setChunkName("")
+        setVideoSaved(false)
+        setAccessToken("")
+        transcodeFinished = false
         const file = e.target.files?.item(0);
 
         if (file) {
@@ -64,6 +81,7 @@ const UploadButton = () => {
                     // but will work with a popup. Ghetto workaround, but it works for now..
                     return getAccessTokenWithPopup({ audience: 'http://localhost:3000/' })
                 })
+            setAccessToken(accessToken)
 
 
             const { maxFileSize, chunkSize } = await getChunkConstants(accessToken)
@@ -96,14 +114,18 @@ const UploadButton = () => {
             setLoading(false)
             setStatusText("Upload complete!")
             setTimeout(() => {
-                setStatusText("Transcoding file...")
-                setLoading(true)
-            },3000)
+                if (!transcodeFinished) {
+                    setStatusText("Transcoding file...")
+                    setLoading(true)
+                }
+            }, 3000)
 
             const transcodeStatus = await allChunksUploaded(chunkName, accessToken)
             setLoading(false)
+            transcodeFinished = true
             if (transcodeStatus) {
                 setStatusText("Transcoding complete!")
+                setChunkName(chunkName)
             } else {
                 setStatusText("Transcoding failed...")
             }
@@ -146,6 +168,28 @@ const UploadButton = () => {
         return false
     }
 
+    const saveVideo = async (chunkName: string, start: number, end: number, videoTitle: string, accessToken: string, callback: VoidFunction): Promise<boolean> => {
+        const res = await instance.post('videos/save', {}, {
+            params: {
+                chunkName: chunkName,
+                videoTitle: videoTitle,
+                start: start,
+                end: end,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        });
+        if (res.status === 200) {
+            setVideoSaved(true)
+            callback()
+            return true
+        }
+        return false
+    }
+
     const getChunkConstants = async (accessToken: string): Promise<ChunkConstants> => {
         const res = await instance.get('videos/chunks/', {
             headers: {
@@ -182,7 +226,17 @@ const UploadButton = () => {
                 id='upload-button'
             />
             {
-                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} errorOccured={errorOccured} />
+                uploadInProgress && <UploadProgress
+                    fileName={fileName}
+                    progress={progress}
+                    statusText={statusText}
+                    loading={loading}
+                    errorOccured={errorOccured}
+                    chunkName={chunkName}
+                    saveVideo={saveVideo}
+                    accessToken={accessToken}
+                    videoSaved={videoSaved}
+                />
             }
         </div>
     )

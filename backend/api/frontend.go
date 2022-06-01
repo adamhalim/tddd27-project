@@ -1,9 +1,12 @@
 package api
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +38,7 @@ func combineChunks(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
-	err = chunk.ForwardVideoToTranscoder(fileName, originalFileName, uid)
+	err = chunk.ForwardVideoToTranscoder(chunkName, fileName, originalFileName, uid)
 	if err != nil {
 		internalError(c, err)
 		return
@@ -49,6 +52,49 @@ func combineChunks(c *gin.Context) {
 		return
 	}
 	os.RemoveAll(directory)
+}
+
+func saveVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+	videoTitle := queryParams["videoTitle"][0]
+	if videoTitle == "" {
+		internalError(c, errors.New("no videoTitle provided"))
+		return
+	}
+	startString := queryParams["start"][0]
+	if startString == "" {
+		internalError(c, errors.New("no start provided"))
+		return
+	}
+	endString := queryParams["end"][0]
+	if endString == "" {
+		internalError(c, errors.New("no end provided"))
+		return
+	}
+	start, err := strconv.ParseFloat(startString, 64)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	end, err := strconv.ParseFloat(endString, 64)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	if err := chunk.SaveVideo(chunkName, start, end, videoTitle); err != nil {
+		internalError(c, err)
+		return
+	}
 }
 
 func chunkConstants(c *gin.Context) {

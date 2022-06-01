@@ -23,11 +23,14 @@ func handleRequests() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:8080"},
-		AllowMethods: []string{"POST"},
+		AllowMethods: []string{"POST", "GET"},
 		AllowHeaders: []string{"Content-Type", "Origin"},
 	}))
 
 	r.POST(ApiPath+"transcode/", postVideo)
+	r.GET(ApiPath+"save/", saveVideo)
+
+	r.Static("/video/", "tmp/")
 
 	r.Run(":8081")
 }
