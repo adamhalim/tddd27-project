@@ -55,15 +55,14 @@ func postVideo(c *gin.Context) {
 	}
 
 	file := c.Request.MultipartForm.File["videoFile"][0]
-	dir := "tmp/" + file.Filename
+	dir := "tmp/" + chunkName
 	err = os.MkdirAll(dir, os.ModeTemporary)
 	if err != nil {
 		internalError(c, err)
 		return
 	}
-	defer cleanup(dir)
 
-	fileName := "tmp/" + file.Filename + "/" + file.Filename
+	fileName := dir + file.Filename
 	err = c.SaveUploadedFile(file, fileName)
 	if err != nil {
 		internalError(c, err)
