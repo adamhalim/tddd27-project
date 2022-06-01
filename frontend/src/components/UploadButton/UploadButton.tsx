@@ -44,10 +44,13 @@ const UploadButton = () => {
     let transcodeFinished = false
     
     const submit = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setErrorOccured(false);
-        setProgress(0);
+        setProgress(0)
+        setUploadInProgress(false)
+        setErrorOccured(false)
+        setFileName("")
         setStatusText("")
-        setChunkName("");
+        setLoading(false)
+        setChunkName("")
         transcodeFinished = false
         const file = e.target.files?.item(0);
 
