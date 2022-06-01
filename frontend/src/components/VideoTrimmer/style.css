@@ -9,6 +9,7 @@
     padding:0;
     padding-left: 1em;
     padding-right: 1em;
+    margin-bottom: 0;
 }
 
 .video-trimmer-title {
@@ -16,5 +17,28 @@
 }
 
 .video-trimmer-wrapper input {
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    background-color: inherit;
+    border-style:groove;
+    font: inherit;
+    padding: 0;
+}
+.video-trimmer-wrapper input:focus {
+    outline: none;
+}
+
+
+.video-trimmer-title {
+    box-shadow: 1px 1px 1px 1px rgb(202, 201, 201);
+    padding: 0.2em;
+    width: fit-content;
+}
+
+.video-trimmer-title:hover {
+    box-shadow: 1px 1px 1px 1px rgb(75, 75, 75);
+}
+
+.video-trimmer-save {
+    display: flex;
+    align-items: center;
+    padding-top: 1em;
 }

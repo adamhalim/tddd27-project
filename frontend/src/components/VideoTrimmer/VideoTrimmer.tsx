@@ -2,11 +2,15 @@ import './style.css'
 import Nouislider from 'nouislider-react'
 import "nouislider/distribute/nouislider.css";
 import { useEffect, useState } from 'react';
+import LoadingSpinner from '../LoadingSpinner';
 type VideoTrimmer = {
     videoSrc: string,
-    fileName: string
+    fileName: string,
+    chunkName: string,
+    accessToken: string,
+    saveVideo: (chunkName: string, start: number, end: number, title: string, accesstoken: string, callback: VoidFunction) => Promise<boolean>
 }
-const VideoTrimmer = ({ videoSrc, fileName }: VideoTrimmer) => {
+const VideoTrimmer = ({ chunkName, videoSrc, fileName, accessToken, saveVideo }: VideoTrimmer) => {
     let videoElement: HTMLVideoElement;
 
     const [previousStartTime, setPreviousStartTime] = useState(0)
@@ -16,9 +20,11 @@ const VideoTrimmer = ({ videoSrc, fileName }: VideoTrimmer) => {
     const [videoDuration, setVideoDuration] = useState(0)
     const [videoTitle, setVideoTitle] = useState(fileName)
     const [videoTitleIsEdited, setVideoTitleIsEdited] = useState(false)
+    const [waitingForSave, setWaitingForSave] = useState(false)
+    const [saved, setSaved] = useState(false)
 
     useEffect(() => {
-        if (videoElement.duration) {
+        if (videoElement?.duration) {
             setVideoDuration(videoElement.duration)
             if (startTime !== previousStartTime) {
                 videoElement.currentTime = startTime * videoElement.duration
@@ -49,6 +55,13 @@ const VideoTrimmer = ({ videoSrc, fileName }: VideoTrimmer) => {
 
     const handleSave = () => {
         // TODO: send start, end & title to transcoder
+        setWaitingForSave(true)
+        saveVideo(chunkName, startTime, endTime, videoTitle, accessToken, videoIsSaved)
+    }
+
+    const videoIsSaved = () => {
+        setWaitingForSave(false)
+        setSaved(true)
     }
 
     return (
@@ -91,6 +104,8 @@ const VideoTrimmer = ({ videoSrc, fileName }: VideoTrimmer) => {
                                 <input
                                     value={videoTitle}
                                     onChange={handleTitleChange}
+                                    autoFocus
+
                                 ></input>
                                 <button className='video-trimmer-title-save'
                                     onClick={() => setTimeout(() => {
@@ -105,19 +120,27 @@ const VideoTrimmer = ({ videoSrc, fileName }: VideoTrimmer) => {
                             <div style={{ display: 'flex', overflowWrap: 'break-word' }}>
                                 {videoTitle}
                                 <div style={{ fontStyle: 'italic', color: 'grey' }}>
-                                    &nbsp;edit
                                 </div>
                             </div>
                     }
                 </div>
 
             </div>
-            <div>
-                <button
-                    onClick={handleSave}
-                >
-                    Save
-                </button>
+            <div className='video-trimmer-save' >
+                <div>
+                    {!saved &&
+                        <button
+                            onClick={handleSave}
+                        >
+                            Save
+                        </button>
+                    }
+                </div>
+                <div>
+                    {
+                        waitingForSave && <LoadingSpinner />
+                    }
+                </div>
             </div>
         </div>
     )

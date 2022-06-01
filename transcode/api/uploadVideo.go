@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/session"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/transcoder/h264"
 )

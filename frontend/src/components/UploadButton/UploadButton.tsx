@@ -40,6 +40,9 @@ const UploadButton = () => {
     const [statusText, setStatusText] = useState("");
     const [loading, setLoading] = useState(false);
     const [chunkName, setChunkName] = useState("");
+    const [videoSaved, setVideoSaved] = useState(false);
+    const [accessToken, setAccessToken] = useState("")
+
 
     let transcodeFinished = false
     
@@ -51,6 +54,8 @@ const UploadButton = () => {
         setStatusText("")
         setLoading(false)
         setChunkName("")
+        setVideoSaved(false)
+        setAccessToken("")
         transcodeFinished = false
         const file = e.target.files?.item(0);
 
@@ -76,6 +81,7 @@ const UploadButton = () => {
                     // but will work with a popup. Ghetto workaround, but it works for now..
                     return getAccessTokenWithPopup({ audience: 'http://localhost:3000/' })
                 })
+            setAccessToken(accessToken)
 
 
             const { maxFileSize, chunkSize } = await getChunkConstants(accessToken)
@@ -112,7 +118,7 @@ const UploadButton = () => {
                     setStatusText("Transcoding file...")
                     setLoading(true)
                 }
-            },3000)
+            }, 3000)
 
             const transcodeStatus = await allChunksUploaded(chunkName, accessToken)
             setLoading(false)
@@ -162,6 +168,28 @@ const UploadButton = () => {
         return false
     }
 
+    const saveVideo = async (chunkName: string, start: number, end: number, videoTitle: string, accessToken: string, callback: VoidFunction): Promise<boolean> => {
+        const res = await instance.post('videos/save', {}, {
+            params: {
+                chunkName: chunkName,
+                videoTitle: videoTitle,
+                start: start,
+                end: end,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        });
+        if (res.status === 200) {
+            setVideoSaved(true)
+            callback()
+            return true
+        }
+        return false
+    }
+
     const getChunkConstants = async (accessToken: string): Promise<ChunkConstants> => {
         const res = await instance.get('videos/chunks/', {
             headers: {
@@ -198,7 +226,17 @@ const UploadButton = () => {
                 id='upload-button'
             />
             {
-                uploadInProgress && <UploadProgress fileName={fileName} progress={progress} statusText={statusText} loading={loading} errorOccured={errorOccured} chunkName={chunkName} />
+                uploadInProgress && <UploadProgress
+                    fileName={fileName}
+                    progress={progress}
+                    statusText={statusText}
+                    loading={loading}
+                    errorOccured={errorOccured}
+                    chunkName={chunkName}
+                    saveVideo={saveVideo}
+                    accessToken={accessToken}
+                    videoSaved={videoSaved}
+                />
             }
         </div>
     )
