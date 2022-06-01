@@ -43,6 +43,7 @@ func handleRequests() {
 		authorized.POST("videos/combine/", combineChunks)
 		authorized.GET("videos/chunks/", chunkConstants)
 		authorized.POST("videos/", uploadVideoChunk)
+		authorized.POST("videos/save", saveVideo)
 	}
 
 	r.GET(ApiPath+"video/", getVideo)
