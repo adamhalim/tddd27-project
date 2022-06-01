@@ -12,6 +12,7 @@ import (
 
 const (
 	transcoderUrl = "http://localhost:8081/api/transcode"
+	saveUrl       = "http://localhost:8081/api/save"
 )
 
 func ForwardVideoToTranscoder(chunkName string, fileName string, originalFileName string, uid string) error {
@@ -42,6 +43,27 @@ func ForwardVideoToTranscoder(chunkName string, fileName string, originalFileNam
 		return err
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("request failed with code %d", res.StatusCode)
+	}
+	return nil
+}
+
+func SaveVideo(chunkName string, startTime float64, endTime float64, videoTitle string) error {
+	client := &http.Client{}
+	session, err := getSession(chunkName)
+	if err != nil {
+		return err
+	}
+	defer session.RemoveSession()
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s?chunkName=%s&videoTitle=%s&start=%f&end=%f", saveUrl, chunkName, url.QueryEscape(videoTitle), startTime, endTime), nil)
+	if err != nil {
+		return err
+	}
 	res, err := client.Do(req)
 	if err != nil {
 		return err
