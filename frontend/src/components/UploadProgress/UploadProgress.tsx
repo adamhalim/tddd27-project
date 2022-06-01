@@ -14,7 +14,7 @@ type UploadProgressType = {
     chunkName: string,
     accessToken: string,
     videoSaved: boolean,
-    saveVideo: (chunkName: string, start: number, end: number, title: string, accessToken: string, callback: VoidFunction) => Promise<boolean>
+    saveVideo: (chunkName: string, start: number, end: number, title: string, accessToken: string) => Promise<boolean>
 }
 
 const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured, chunkName, accessToken, videoSaved, saveVideo }: UploadProgressType) => {
