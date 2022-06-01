@@ -90,7 +90,7 @@ func postVideo(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
-	newSession.TranscodedFileName = fmt.Sprintf("%s/transcoded/%s", dir, file.Filename)
+	newSession.TranscodedFileName = fmt.Sprintf("%s/transcoded/%s.mp4", dir, fileutil.RemoveFileExtension(file.Filename))
 
 	c.Status(http.StatusOK)
 
