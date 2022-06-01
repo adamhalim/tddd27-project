@@ -24,6 +24,8 @@ const UploadProgress = ({ progress, fileName, statusText, loading, errorOccured,
             fetchVideoURL(chunkName).then((url) => {
                 setVideoSrc(url as string)
             })
+        } else {
+            setVideoSrc("")
         }
     }, [chunkName])
 
