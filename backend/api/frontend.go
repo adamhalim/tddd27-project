@@ -35,7 +35,7 @@ func combineChunks(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
-	err = chunk.ForwardVideoToTranscoder(fileName, originalFileName, uid)
+	err = chunk.ForwardVideoToTranscoder(chunkName, fileName, originalFileName, uid)
 	if err != nil {
 		internalError(c, err)
 		return

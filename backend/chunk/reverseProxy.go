@@ -14,7 +14,7 @@ const (
 	transcoderUrl = "http://localhost:8081/api/transcode"
 )
 
-func ForwardVideoToTranscoder(fileName string, originalFileName string, uid string) error {
+func ForwardVideoToTranscoder(chunkName string, fileName string, originalFileName string, uid string) error {
 	// TODO: Might be worth to do this with gin instead of standard library
 	// Uses multipart to upload file as chunks to transcoder
 	client := &http.Client{}
@@ -37,7 +37,7 @@ func ForwardVideoToTranscoder(fileName string, originalFileName string, uid stri
 	}
 
 	writer.Close()
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s?originalFileName=%s&uid=%s", transcoderUrl, url.QueryEscape(originalFileName), uid), bytes.NewReader(body.Bytes()))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s?chunkName=%s&originalFileName=%s&uid=%s", transcoderUrl, chunkName, url.QueryEscape(originalFileName), uid), bytes.NewReader(body.Bytes()))
 	if err != nil {
 		return err
 	}
