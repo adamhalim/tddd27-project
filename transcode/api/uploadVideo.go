@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/session"
@@ -94,6 +95,54 @@ func postVideo(c *gin.Context) {
 	c.Status(http.StatusOK)
 
 	// TODO: upload to database & do
+}
+
+func saveVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+	videoTitle := queryParams["videoTitle"][0]
+	if videoTitle == "" {
+		internalError(c, errors.New("no videoTitle provided"))
+		return
+	}
+	startString := queryParams["start"][0]
+	if startString == "" {
+		internalError(c, errors.New("no start provided"))
+		return
+	}
+	endString := queryParams["end"][0]
+	if endString == "" {
+		internalError(c, errors.New("no end provided"))
+		return
+	}
+
+	session, err := session.GetSession(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	start, err := strconv.ParseFloat(startString, 64)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	end, err := strconv.ParseFloat(endString, 64)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	h264.CutVideo(session.TranscodedFileName, session.OriginalFileName, videoTitle, start, end, session.Dir, session.Uid, chunkName)
+
 }
 
 func cleanup(directory string) {

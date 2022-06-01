@@ -28,6 +28,7 @@ func handleRequests() {
 	}))
 
 	r.POST(ApiPath+"transcode/", postVideo)
+	r.GET(ApiPath+"save/", saveVideo)
 
 	r.Run(":8081")
 }
