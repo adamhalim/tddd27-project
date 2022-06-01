@@ -34,6 +34,10 @@ func init() {
 // Could be exported and wrapped in an AWS lambda.
 func postVideo(c *gin.Context) {
 	err := c.Request.ParseMultipartForm(maxMemory)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
 	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
 	if err != nil {
 		internalError(c, err)
