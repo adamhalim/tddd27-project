@@ -8,11 +8,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
 )
 
 const (
 	transcoderUrl = "http://localhost:8081/api/transcode"
 	saveUrl       = "http://localhost:8081/api/save"
+	previewUrl    = "http://localhost:8081/video"
 )
 
 func ForwardVideoToTranscoder(chunkName string, fileName string, originalFileName string, uid string) error {
@@ -72,4 +75,15 @@ func SaveVideo(chunkName string, startTime float64, endTime float64, videoTitle 
 		return fmt.Errorf("request failed with code %d", res.StatusCode)
 	}
 	return nil
+}
+
+func GetVideoPreview(chunkName string) (string, error) {
+	session, err := getSession(chunkName)
+	if err != nil {
+		return "", err
+	}
+	//TODO: implement actual reverse proxy.
+	videoUrl := fmt.Sprintf("%s/%s/transcoded/%s.mp4", previewUrl, chunkName, fileutil.RemoveFileExtension(session.originalFileName))
+	return videoUrl, nil
+
 }
