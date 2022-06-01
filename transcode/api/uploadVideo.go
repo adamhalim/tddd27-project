@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/session"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/transcode/transcoder/h264"
 )
 
@@ -43,6 +45,11 @@ func postVideo(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
 	originalFileName := queryParams["originalFileName"][0]
 	if originalFileName == "" {
 		internalError(c, errors.New("no originalFileName provided"))
@@ -68,6 +75,13 @@ func postVideo(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
+	defer os.Remove(fileName)
+
+	newSession, err := session.NewSession(chunkName, fileName, dir, originalFileName, uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
 
 	// Run FFMPEG
 	err = h264.TranscodeToh264(fileName, originalFileName, dir, uid)
@@ -75,6 +89,7 @@ func postVideo(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
+	newSession.TranscodedFileName = fmt.Sprintf("%s/transcoded/%s", dir, file.Filename)
 
 	c.Status(http.StatusOK)
 
