@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
@@ -34,8 +35,15 @@ func getVideo(c *gin.Context) {
 		return
 	}
 
+	video, err := postgres.FindVideo(chunkName)
+	if err != nil {
+		internalError(c, fmt.Errorf("no video found with chunkName %s", chunkName))
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"url": url.String(),
+		"url":       url.String(),
+		"viewcount": video.ViewCount,
 	})
 }
 
