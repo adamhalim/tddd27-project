@@ -17,6 +17,8 @@ const VideoPage = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [videoURL, setVideoURL] = useState("");
+    const [videoTitle, setVideoTitle] = useState("");
+    const [viewCount, setViewCount] = useState(0);
 
     useEffect(() => {
         update()
@@ -24,9 +26,12 @@ const VideoPage = () => {
 
     const update = async () => {
         if (id) {
-            const url = await fetchVideoURL(id as string)
-            if (typeof url === 'string') {
+            const data = await fetchVideoURL(id as string)
+            if (data) {
+                const {url, viewcount, videotitle} = data
                 setVideoURL(url)
+                setVideoTitle(videoTitle)
+                setViewCount(viewcount)
                 setLoading(false)
             } else {
                 // TODO: error handling
