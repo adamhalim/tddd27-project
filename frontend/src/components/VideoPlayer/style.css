@@ -5,7 +5,7 @@
 
 .video-player-container {
     max-width: 100vh; 
-    max-height: 100vh;
+    max-height: 100%;
     width: auto; 
     height: auto; 
     z-index: -100;
@@ -14,4 +14,3 @@
     margin-left: auto;
     margin-right: auto;
 }
-

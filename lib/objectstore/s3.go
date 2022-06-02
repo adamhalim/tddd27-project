@@ -69,19 +69,15 @@ func FilesFromDirectory(originalFileName string, dir string, uid string) error {
 			return nil
 		}
 		// We add all files to the bucket at chunkName/file.ts
-		FiletoDB(dirName+"/"+info.Name(), path, originalFileName, uid)
+		FiletoDB(dirName+"/"+info.Name(), path, originalFileName, uid, originalFileName)
 		return nil
 	})
 	return nil
 }
 
-func FiletoDB(fileName string, filePath string, originalFileName string, uid string) error {
+func FiletoDB(fileName string, filePath string, originalFileName string, uid string, videoTitle string) error {
 	if _, err := getMinioClient().FPutObject(context.Background(), bucketName, fileName, filePath, minio.PutObjectOptions{
 		ContentType: "application/video",
-		UserMetadata: map[string]string{
-			"originalFileName": originalFileName,
-			"uid":              uid,
-		},
 	}); err != nil {
 		return err
 	}

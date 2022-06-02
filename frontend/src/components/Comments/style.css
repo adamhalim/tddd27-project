@@ -1,0 +1,25 @@
+.comments-container {
+    padding: 1em;
+    background-color: #EEEEEE;
+}
+
+.comments-add button {
+    margin-left: 1em;
+}
+
+.comments-add {
+    display: flex;
+}
+
+.comments-add input {
+    border: none;
+    border-bottom: grey;
+    border-bottom-width: thin;
+    border-bottom-style: solid;
+    background: none;
+    flex-grow: 1;
+}
+
+.comments-add input:focus {
+    outline: none;
+}
