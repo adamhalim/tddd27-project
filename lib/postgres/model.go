@@ -12,3 +12,9 @@ type Video struct {
 	Title            string `db:"videotitle"`
 	OriginalFileName string `db:"originalfilename"`
 }
+
+type Comment struct {
+	Chunkname string `db:"chunkname"`
+	Comment   string `db:"comment"`
+	AuthorUid string `db:"author_uid"`
+}
