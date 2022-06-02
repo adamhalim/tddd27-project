@@ -69,13 +69,29 @@ func createTables() {
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS videos (
 			chunkname VARCHAR(36) NOT NULL,
-			lastViewed NUMERIC(11,0) NOT NULL,
+			lastViewed NUMERIC(14,0) NOT NULL,
 			uid VARCHAR(50),
 			FOREIGN KEY(uid) REFERENCES users(uid),
 			viewcount INTEGER NOT NULL,
 			videotitle VARCHAR(100) NOT NULL,
 			originalfilename VARCHAR(100) NOT NULL,
 			CONSTRAINT pk_chunkname PRIMARY KEY(chunkname)
+		)
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS comments (
+			id SERIAL primary key,
+			chunkname VARCHAR(36) NOT NULL,
+			comment VARCHAR(2000) NOT NULL,
+			author_uid VARCHAR(50) NOT NULL,
+			date NUMERIC(14,0) NOT NULL,
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
+			FOREIGN KEY(author_uid) REFERENCES users(uid)
 		)
 	`)
 
@@ -98,19 +114,18 @@ func AddUser(user User) error {
 	return nil
 }
 
-func FindUser(uid string) User {
+func FindUser(uid string) (User, error) {
 	var user User
-	row := db.QueryRow(`SELECT uid FROM users WHERE uid=$1`, uid)
-	err := row.Scan(&user.Uid)
+	err := db.Get(&user, `SELECT uid FROM users WHERE uid=$1`, uid)
 	if err != nil {
-		return User{}
+		return User{}, err
 	}
-	return user
+	return user, nil
 }
 
 func UserExists(uid string) bool {
-	user := FindUser(uid)
-	return user != User{}
+	_, err := FindUser(uid)
+	return err == nil
 }
 
 func AddVideo(video Video) error {
@@ -175,9 +190,50 @@ func UpdateLastViewed(chunkName string) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(time.Now().Unix(), chunkName)
+	_, err = stmt.Exec(time.Now().UnixMilli(), chunkName)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func AddComment(chunkName string, comment string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		INSERT INTO comments(
+			chunkname,
+			comment,
+			author_uid,
+			date
+		) VALUES($1, $2, $3, $4)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, comment, authorUid, time.Now().UnixMilli())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetComments(chunkName string) ([]Comment, error) {
+
+	comments := []Comment{}
+	err := db.Select(&comments, `SELECT comment, author_uid, date FROM comments WHERE chunkname=$1`, chunkName)
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
 }
