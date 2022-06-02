@@ -77,10 +77,12 @@ func SaveVideo(chunkName string, startTime float64, endTime float64, videoTitle 
 		return fmt.Errorf("request failed with code %d", res.StatusCode)
 	}
 	if err := postgres.AddVideo(postgres.Video{
-		Chunkname:  chunkName,
-		LastViewed: time.Now().Unix(),
-		Uid:        session.uid,
-		ViewCount:  0,
+		Chunkname:        chunkName,
+		LastViewed:       time.Now().Unix(),
+		Uid:              session.uid,
+		ViewCount:        0,
+		Title:            videoTitle,
+		OriginalFileName: session.originalFileName,
 	}); err != nil {
 		return err
 	}

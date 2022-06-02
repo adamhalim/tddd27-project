@@ -42,8 +42,9 @@ func getVideo(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"url":       url.String(),
-		"viewcount": video.ViewCount,
+		"url":        url.String(),
+		"viewcount":  video.ViewCount,
+		"videotitle": video.Title,
 	})
 }
 
