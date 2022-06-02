@@ -14,16 +14,3 @@
     margin-left: auto;
     margin-right: auto;
 }
-
-.video-player-stats {
-    width: inherit;
-}
-
-.video-player-title {
-    float: left;
-}
-
-.video-player-viewcount {
-    float: right;
-}
-

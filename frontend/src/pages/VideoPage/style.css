@@ -1,3 +1,16 @@
 .video-page-player-wrapper {
     margin-top: 2em;
 }
+
+.video-page-stats {
+    overflow: hidden;
+    width: inherit;
+}
+
+.video-page-title {
+    float: left;
+}
+
+.video-page-viewcount {
+    float: right;
+}

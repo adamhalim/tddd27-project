@@ -49,14 +49,14 @@ const VideoPage = () => {
                         <VideoPlayer
                             videoSrc={videoURL}
                         />
-                        <div className='video-player-stats'>
-                            <div className='video-player-wrapper'>
-                                <span className='video-player-title'> title: {videoTitle}</span>
-                                <span className='video-player-viewcount'>viewcount: {viewCount} </span>
-                            </div>
+                        <div className='video-page-stats'>
+                            <div className='video-page-title'> title: {videoTitle}</div>
+                            <div className='video-page-viewcount'>viewcount: {viewCount} </div>
+                        </div>
+                        <div>
+
                         </div>
                     </div>
-
 
                 </div>
             }
