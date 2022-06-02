@@ -1,7 +1,7 @@
 package postgres
 
 type User struct {
-	Uid string
+	Uid string `db:"uid"`
 }
 
 type Video struct {

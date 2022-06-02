@@ -113,19 +113,18 @@ func AddUser(user User) error {
 	return nil
 }
 
-func FindUser(uid string) User {
+func FindUser(uid string) (User, error) {
 	var user User
-	row := db.QueryRow(`SELECT uid FROM users WHERE uid=$1`, uid)
-	err := row.Scan(&user.Uid)
+	err := db.Get(&user, `SELECT uid FROM users WHERE uid=$1`, uid)
 	if err != nil {
-		return User{}
+		return User{}, err
 	}
-	return user
+	return user, nil
 }
 
 func UserExists(uid string) bool {
-	user := FindUser(uid)
-	return user != User{}
+	_, err := FindUser(uid)
+	return err == nil
 }
 
 func AddVideo(video Video) error {
