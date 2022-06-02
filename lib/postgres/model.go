@@ -17,4 +17,5 @@ type Comment struct {
 	Chunkname string `db:"chunkname"`
 	Comment   string `db:"comment"`
 	AuthorUid string `db:"author_uid"`
+	Date      int64  `db:"date"`
 }
