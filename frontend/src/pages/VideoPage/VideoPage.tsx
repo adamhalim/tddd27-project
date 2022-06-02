@@ -45,11 +45,19 @@ const VideoPage = () => {
             {
                 !loading &&
                 <div className='video-page-player-wrapper'>
-                    <VideoPlayer
-                        videoSrc={videoURL}
-                        videoTitle={videoTitle}
-                        viewCount={viewCount}
-                    />
+                    <div className='video-player-container'>
+                        <VideoPlayer
+                            videoSrc={videoURL}
+                        />
+                        <div className='video-player-stats'>
+                            <div className='video-player-wrapper'>
+                                <span className='video-player-title'> title: {videoTitle}</span>
+                                <span className='video-player-viewcount'>viewcount: {viewCount} </span>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             }
 

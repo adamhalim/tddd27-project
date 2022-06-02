@@ -2,13 +2,11 @@ import './style.css'
 
 type VideoPlayerType = {
     videoSrc: string,
-    videoTitle: string,
-    viewCount: number,
 }
 
-const VideoPlayer = ({ videoSrc, videoTitle, viewCount }: VideoPlayerType) => {
+const VideoPlayer = ({ videoSrc }: VideoPlayerType) => {
     return (
-        <div className='video-player-container'>
+        <>
             <video
                 src={videoSrc}
                 controls
@@ -17,13 +15,7 @@ const VideoPlayer = ({ videoSrc, videoTitle, viewCount }: VideoPlayerType) => {
                 loop
             >
             </video>
-            <div className='video-player-stats'>
-                <div className='video-player-wrapper'>
-                    <span className='video-player-title'> title: {videoTitle}</span>
-                    <span className='video-player-viewcount'>viewcount: {viewCount} </span>
-                </div>
-            </div>
-        </div>
+        </>
     )
 }
 
