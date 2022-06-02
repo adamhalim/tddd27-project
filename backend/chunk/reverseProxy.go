@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/fileutil"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
 )
 
 const (
@@ -73,6 +75,14 @@ func SaveVideo(chunkName string, startTime float64, endTime float64, videoTitle 
 	}
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("request failed with code %d", res.StatusCode)
+	}
+	if err := postgres.AddVideo(postgres.Video{
+		Chunkname:  chunkName,
+		LastViewed: time.Now().Unix(),
+		Uid:        session.uid,
+		ViewCount:  0,
+	}); err != nil {
+		return err
 	}
 	return nil
 }
