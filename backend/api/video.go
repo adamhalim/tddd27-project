@@ -41,6 +41,12 @@ func getVideo(c *gin.Context) {
 		return
 	}
 
+	err = postgres.UpdateLastViewed(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
 		"url":        url.String(),
 		"viewcount":  video.ViewCount,

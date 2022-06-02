@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
@@ -163,4 +164,20 @@ func FindVideo(chunkName string) (Video, error) {
 		return Video{}, err
 	}
 	return video, nil
+}
+
+func UpdateLastViewed(chunkName string) error {
+	stmt, err := db.Prepare(`
+		UPDATE videos
+			SET lastviewed = $1
+			WHERE chunkname = $2
+	`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(time.Now().Unix(), chunkName)
+	if err != nil {
+		return err
+	}
+	return nil
 }
