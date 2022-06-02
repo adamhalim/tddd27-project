@@ -28,9 +28,9 @@ const VideoPage = () => {
         if (id) {
             const data = await fetchVideoURL(id as string)
             if (data) {
-                const {url, viewcount, videotitle} = data
+                const { url, viewcount, videotitle } = data
                 setVideoURL(url)
-                setVideoTitle(videoTitle)
+                setVideoTitle(videotitle)
                 setViewCount(viewcount)
                 setLoading(false)
             } else {
@@ -42,11 +42,16 @@ const VideoPage = () => {
 
     return (
         <div className='video-page-container'>
-            <div className='video-page-player-wrapper'>
-                {
-                    !loading && <VideoPlayer videoSrc={videoURL} />
-                }
-            </div>
+            {
+                !loading &&
+                <div className='video-page-player-wrapper'>
+                    <VideoPlayer
+                        videoSrc={videoURL}
+                        videoTitle={videoTitle}
+                        viewCount={viewCount}
+                    />
+                </div>
+            }
 
         </div>
 
