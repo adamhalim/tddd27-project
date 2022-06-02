@@ -8,7 +8,7 @@ interface videoStats {
     url: string
 }
 export const fetchVideoURL = async (id: string) => {
-    const res = await instance.get('video', {
+    const res = await instance.get('video/', {
         params: {
             chunkName: id,
         }
