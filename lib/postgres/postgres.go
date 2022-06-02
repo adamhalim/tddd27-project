@@ -196,3 +196,34 @@ func UpdateLastViewed(chunkName string) error {
 	}
 	return nil
 }
+
+func AddComment(chunkName string, comment string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		INSERT INTO comments(
+			chunkname,
+			comment,
+			author_uid,
+			date
+		) VALUES($1, $2, $3, $4)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, comment, authorUid, time.Now().UnixMilli())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

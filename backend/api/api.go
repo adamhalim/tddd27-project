@@ -38,12 +38,14 @@ func handleRequests() {
 		if err := middleware.HandleChunkUpload(r, token); err != nil {
 			http.Error(w, fmt.Sprintf("error: %s", err.Error()), 400)
 		}
+		w.Header().Add("Uid", token.RegisteredClaims.Subject)
 	}))))
 	{
 		authorized.POST("videos/combine/", combineChunks)
 		authorized.GET("videos/chunks/", chunkConstants)
 		authorized.POST("videos/", uploadVideoChunk)
 		authorized.POST("videos/save", saveVideo)
+		authorized.POST("videos/comments/", addComment)
 	}
 
 	r.GET(ApiPath+"preview/", videoPreivew)
