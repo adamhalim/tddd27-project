@@ -227,3 +227,13 @@ func AddComment(chunkName string, comment string, authorUid string) error {
 
 	return nil
 }
+
+func GetComments(chunkName string) ([]Comment, error) {
+
+	comments := []Comment{}
+	err := db.Select(&comments, `SELECT comment, author_uid, date FROM comments WHERE chunkname=$1`, chunkName)
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}

@@ -122,3 +122,26 @@ func addComment(c *gin.Context) {
 
 	c.Status(http.StatusCreated)
 }
+
+func getComments(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	comments, err := postgres.GetComments(chunkName)
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": comments,
+	})
+}
