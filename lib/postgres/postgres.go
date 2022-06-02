@@ -69,7 +69,7 @@ func createTables() {
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS videos (
 			chunkname VARCHAR(36) NOT NULL,
-			lastViewed NUMERIC(11,0) NOT NULL,
+			lastViewed NUMERIC(14,0) NOT NULL,
 			uid VARCHAR(50),
 			FOREIGN KEY(uid) REFERENCES users(uid),
 			viewcount INTEGER NOT NULL,
@@ -190,7 +190,7 @@ func UpdateLastViewed(chunkName string) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(time.Now().Unix(), chunkName)
+	_, err = stmt.Exec(time.Now().UnixMilli(), chunkName)
 	if err != nil {
 		return err
 	}

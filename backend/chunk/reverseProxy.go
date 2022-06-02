@@ -78,7 +78,7 @@ func SaveVideo(chunkName string, startTime float64, endTime float64, videoTitle 
 	}
 	if err := postgres.AddVideo(postgres.Video{
 		Chunkname:        chunkName,
-		LastViewed:       time.Now().Unix(),
+		LastViewed:       time.Now().UnixMilli(),
 		Uid:              session.uid,
 		ViewCount:        0,
 		Title:            videoTitle,
