@@ -71,6 +71,7 @@ func createTables() {
 			lastViewed NUMERIC(11,0) NOT NULL,
 			uid VARCHAR(50),
 			FOREIGN KEY(uid) REFERENCES users(uid),
+			viewcount INTEGER NOT NULL,
 			CONSTRAINT pk_chunkname PRIMARY KEY(chunkname)
 		)
 	`)
@@ -114,20 +115,39 @@ func AddVideo(video Video) error {
 		INSERT INTO videos(
 			chunkname,
 			lastviewed,
-			uid)
-			VALUES($1, $2, $3)
+			uid,
+			viewcount
+			)
+			VALUES($1, $2, $3, $4)
 	`)
 	if err != nil {
 		return err
 	}
 
 	if video.Uid == "" {
-		_, err = stmt.Exec(video.Chunkname, video.LastViewed, nil)
+		_, err = stmt.Exec(video.Chunkname, video.LastViewed, nil, video.ViewCount)
 	} else {
-		_, err = stmt.Exec(video.Chunkname, video.LastViewed, video.Uid)
+		_, err = stmt.Exec(video.Chunkname, video.LastViewed, video.Uid, video.ViewCount)
 	}
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func IncrementViewCount(chunkName string) error {
+	stmt, err := db.Prepare(`
+		UPDATE videos
+			SET viewcount = viewcount + 1
+			WHERE chunkname = $1
+	`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(chunkName)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

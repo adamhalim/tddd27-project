@@ -47,6 +47,7 @@ func combineChunks(c *gin.Context) {
 		Chunkname:  chunkName,
 		LastViewed: time.Now().Unix(),
 		Uid:        uid,
+		ViewCount:  0,
 	}); err != nil {
 		internalError(c, err)
 		return

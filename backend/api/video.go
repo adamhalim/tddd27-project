@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
 )
 
 var (
@@ -22,6 +23,12 @@ const (
 func getVideo(c *gin.Context) {
 	chunkName := c.Query("chunkName")
 	url, err := objectstore.GetVideoURL(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	err = postgres.IncrementViewCount(chunkName)
 	if err != nil {
 		internalError(c, err)
 		return
