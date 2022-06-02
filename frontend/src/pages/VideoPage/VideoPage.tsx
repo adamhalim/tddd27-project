@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'
+import Comments from '../../components/Comments';
 import VideoPlayer from '../../components/VideoPlayer';
 import { fetchVideoURL } from '../../lib/fetchVideoURL';
 import './style.css'
@@ -53,8 +54,10 @@ const VideoPage = () => {
                             <div className='video-page-title'> title: {videoTitle}</div>
                             <div className='video-page-viewcount'>viewcount: {viewCount} </div>
                         </div>
-                        <div>
-
+                        <div className='video-page-comments'>
+                            <Comments
+                                chunkName={id as string}
+                            />
                         </div>
                     </div>
 
