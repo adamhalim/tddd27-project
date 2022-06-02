@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
 )
 
 func uploadVideoChunk(c *gin.Context) {
@@ -92,4 +93,32 @@ func chunkConstants(c *gin.Context) {
 		"maxFileSize": chunk.MaxFileSize,
 		"chunkSize":   chunk.ChunkSize,
 	})
+}
+
+func addComment(c *gin.Context) {
+	type commentData struct {
+		ChunkName string `json:"chunkname"`
+		Comment   string `json:"comment"`
+		AuthorUid string
+	}
+	var comment commentData
+	if err := c.BindJSON(&comment); err != nil {
+		internalError(c, err)
+		return
+	}
+
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+	comment.AuthorUid = uid
+
+	err := postgres.AddComment(comment.ChunkName, comment.Comment, comment.AuthorUid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }

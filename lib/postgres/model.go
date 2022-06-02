@@ -14,6 +14,7 @@ type Video struct {
 }
 
 type Comment struct {
+	Id        string `db:"id"`
 	Chunkname string `db:"chunkname"`
 	Comment   string `db:"comment"`
 	AuthorUid string `db:"author_uid"`
