@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'
 import VideoPlayer from '../../components/VideoPlayer';
+import { fetchVideoURL } from '../../lib/fetchVideoURL';
 import './style.css'
 
 const instance = axios.create({
@@ -18,23 +19,21 @@ const VideoPage = () => {
     const [videoURL, setVideoURL] = useState("");
 
     useEffect(() => {
-        fetchVideoURL()
+        update()
     }, [])
 
-    const fetchVideoURL = async () => {
-        const res = await instance.get('', {
-            params: {
-                chunkName: id,
+    const update = async () => {
+        if (id) {
+            const url = await fetchVideoURL(id as string)
+            if (typeof url === 'string') {
+                setVideoURL(url)
+                setLoading(false)
+            } else {
+                // TODO: error handling
             }
-        })
-        setLoading(false)
-        if (res.status === 200) {
-            const data: videoStats = res.data
-            setVideoURL(data.url)
-        } else {
-            // TODO: Error handling here
         }
     }
+
 
     return (
         <div className='video-page-container'>
