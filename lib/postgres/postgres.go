@@ -151,3 +151,12 @@ func IncrementViewCount(chunkName string) error {
 
 	return nil
 }
+
+func FindVideo(chunkName string) (Video, error) {
+	var video Video
+	err := db.Get(&video, `SELECT * FROM videos WHERE chunkname=$1`, chunkName)
+	if err != nil {
+		return Video{}, err
+	}
+	return video, nil
+}
