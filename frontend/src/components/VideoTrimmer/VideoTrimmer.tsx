@@ -8,7 +8,7 @@ type VideoTrimmer = {
     fileName: string,
     chunkName: string,
     accessToken: string,
-    saveVideo: (chunkName: string, start: number, end: number, title: string, accesstoken: string, callback: VoidFunction) => Promise<boolean>
+    saveVideo: (chunkName: string, start: number, end: number, title: string, accesstoken: string) => Promise<boolean>
 }
 const VideoTrimmer = ({ chunkName, videoSrc, fileName, accessToken, saveVideo }: VideoTrimmer) => {
     let videoElement: HTMLVideoElement;
@@ -53,13 +53,10 @@ const VideoTrimmer = ({ chunkName, videoSrc, fileName, accessToken, saveVideo }:
         setVideoTitle(event.target.value)
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
         // TODO: send start, end & title to transcoder
         setWaitingForSave(true)
-        saveVideo(chunkName, startTime, endTime, videoTitle, accessToken, videoIsSaved)
-    }
-
-    const videoIsSaved = () => {
+        await saveVideo(chunkName, startTime, endTime, videoTitle, accessToken)
         setWaitingForSave(false)
         setSaved(true)
     }

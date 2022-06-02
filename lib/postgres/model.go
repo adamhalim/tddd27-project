@@ -5,7 +5,10 @@ type User struct {
 }
 
 type Video struct {
-	Chunkname  string
-	LastViewed int64
-	Uid        string
+	Chunkname        string `db:"chunkname"`
+	LastViewed       int64  `db:"lastviewed"`
+	Uid              string `db:"uid"`
+	ViewCount        int64  `db:"viewcount"`
+	Title            string `db:"videotitle"`
+	OriginalFileName string `db:"originalfilename"`
 }

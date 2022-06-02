@@ -78,11 +78,6 @@ func FilesFromDirectory(originalFileName string, dir string, uid string) error {
 func FiletoDB(fileName string, filePath string, originalFileName string, uid string, videoTitle string) error {
 	if _, err := getMinioClient().FPutObject(context.Background(), bucketName, fileName, filePath, minio.PutObjectOptions{
 		ContentType: "application/video",
-		UserMetadata: map[string]string{
-			"originalFileName": originalFileName,
-			"uid":              uid,
-			"title":            videoTitle,
-		},
 	}); err != nil {
 		return err
 	}

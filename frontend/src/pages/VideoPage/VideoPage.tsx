@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'
 import VideoPlayer from '../../components/VideoPlayer';
+import { fetchVideoURL } from '../../lib/fetchVideoURL';
 import './style.css'
 
 const instance = axios.create({
@@ -16,33 +17,41 @@ const VideoPage = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [videoURL, setVideoURL] = useState("");
+    const [videoTitle, setVideoTitle] = useState("");
+    const [viewCount, setViewCount] = useState(0);
 
     useEffect(() => {
-        fetchVideoURL()
+        update()
     }, [])
 
-    const fetchVideoURL = async () => {
-        const res = await instance.get('', {
-            params: {
-                chunkName: id,
+    const update = async () => {
+        if (id) {
+            const data = await fetchVideoURL(id as string)
+            if (data) {
+                const { url, viewcount, videotitle } = data
+                setVideoURL(url)
+                setVideoTitle(videotitle)
+                setViewCount(viewcount)
+                setLoading(false)
+            } else {
+                // TODO: error handling
             }
-        })
-        setLoading(false)
-        if (res.status === 200) {
-            const data: videoStats = res.data
-            setVideoURL(data.url)
-        } else {
-            // TODO: Error handling here
         }
     }
 
+
     return (
         <div className='video-page-container'>
-            <div className='video-page-player-wrapper'>
-                {
-                    !loading && <VideoPlayer videoSrc={videoURL} />
-                }
-            </div>
+            {
+                !loading &&
+                <div className='video-page-player-wrapper'>
+                    <VideoPlayer
+                        videoSrc={videoURL}
+                        videoTitle={videoTitle}
+                        viewCount={viewCount}
+                    />
+                </div>
+            }
 
         </div>
 

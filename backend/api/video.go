@@ -2,11 +2,13 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
 )
 
 var (
@@ -27,8 +29,28 @@ func getVideo(c *gin.Context) {
 		return
 	}
 
+	err = postgres.IncrementViewCount(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	video, err := postgres.FindVideo(chunkName)
+	if err != nil {
+		internalError(c, fmt.Errorf("no video found with chunkName %s", chunkName))
+		return
+	}
+
+	err = postgres.UpdateLastViewed(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"url": url.String(),
+		"url":        url.String(),
+		"viewcount":  video.ViewCount,
+		"videotitle": video.Title,
 	})
 }
 

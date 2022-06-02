@@ -168,7 +168,7 @@ const UploadButton = () => {
         return false
     }
 
-    const saveVideo = async (chunkName: string, start: number, end: number, videoTitle: string, accessToken: string, callback: VoidFunction): Promise<boolean> => {
+    const saveVideo = async (chunkName: string, start: number, end: number, videoTitle: string, accessToken: string): Promise<boolean> => {
         const res = await instance.post('videos/save', {}, {
             params: {
                 chunkName: chunkName,
@@ -184,7 +184,6 @@ const UploadButton = () => {
         });
         if (res.status === 200) {
             setVideoSaved(true)
-            callback()
             return true
         }
         return false
