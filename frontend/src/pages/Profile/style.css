@@ -1,0 +1,11 @@
+.profile-card input {
+    width: fit-content;
+}
+
+.profile-username {
+    display: flex;
+}
+
+.profile-username button {
+    margin-left: 1em;
+}
