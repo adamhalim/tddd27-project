@@ -48,8 +48,8 @@ const Comments = ({ chunkName }: CommentsType) => {
         })
         if (res.status === 200) {
             interface response {
-                AuthorUid: string,
                 Comment: string,
+                Username: string,
                 Date: number
             }
             const data = res.data.data as response[]
@@ -57,7 +57,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             let comments: Comment[] = []
             data.forEach((c) => {
                 const date = new Date(c.Date)
-                comments.push({ comment: c.Comment, author: c.AuthorUid, date: date })
+                comments.push({ comment: c.Comment, author: c.Username, date: date })
             })
             setComments(comments)
             setCommentsCount(comments.length)

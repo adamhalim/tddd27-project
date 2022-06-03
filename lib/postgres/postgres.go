@@ -250,12 +250,24 @@ func AddComment(chunkName string, comment string, authorUid string) error {
 	return nil
 }
 
-func GetComments(chunkName string) ([]Comment, error) {
+func GetComments(chunkName string) ([]comment, error) {
 
-	comments := []Comment{}
-	err := db.Select(&comments, `SELECT comment, author_uid, date FROM comments WHERE chunkname=$1`, chunkName)
+	comments := []comment{}
+
+	err := db.Select(&comments, `
+		SELECT 
+			c.comment,  c.date, u.username
+		FROM 
+			comments AS c
+		INNER JOIN users AS u ON
+			c.author_uid = u.uid
+		WHERE 
+			c.chunkname = $1
+	
+	`, chunkName)
 	if err != nil {
 		return nil, err
 	}
+
 	return comments, nil
 }

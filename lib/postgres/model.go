@@ -21,3 +21,9 @@ type Comment struct {
 	AuthorUid string `db:"author_uid"`
 	Date      int64  `db:"date"`
 }
+
+type comment struct {
+	Comment  string `db:"comment"`
+	Date     int64  `db:"date"`
+	Username string `db:"username"`
+}
