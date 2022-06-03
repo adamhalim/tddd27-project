@@ -58,6 +58,7 @@ func createTables() {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			uid VARCHAR(50) NOT NULL,
+			username VARCHAR(50) NOT NULL UNIQUE,
 			CONSTRAINT pk_uid PRIMARY KEY(uid)
 		)
 	`)
@@ -102,12 +103,12 @@ func createTables() {
 
 func AddUser(user User) error {
 	stmt, err := db.Prepare(`
-		INSERT INTO users(uid) VALUES($1)
+		INSERT INTO users(uid, username) VALUES($1, $2)
 	`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Uid)
+	_, err = stmt.Exec(user.Uid, user.Username)
 	if err != nil {
 		return err
 	}
@@ -116,7 +117,7 @@ func AddUser(user User) error {
 
 func FindUser(uid string) (User, error) {
 	var user User
-	err := db.Get(&user, `SELECT uid FROM users WHERE uid=$1`, uid)
+	err := db.Get(&user, `SELECT * FROM users WHERE uid=$1`, uid)
 	if err != nil {
 		return User{}, err
 	}
