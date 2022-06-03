@@ -164,3 +164,36 @@ func getMe(c *gin.Context) {
 	})
 }
 
+func changeUsername(c *gin.Context) {
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+
+	_, err := postgres.FindUser(uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	username := queryParams["username"][0]
+	if username == "" {
+		internalError(c, errors.New("no username provided"))
+		return
+	}
+
+	err = postgres.ChangeUsername(uid, username)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+
+}

@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -122,6 +123,26 @@ func FindUser(uid string) (User, error) {
 		return User{}, err
 	}
 	return user, nil
+}
+
+func ChangeUsername(uid string, newUsername string) error {
+	if newUsername == "" {
+		return errors.New("error: empty username")
+	}
+	stmt, err := db.Prepare(`
+		UPDATE users
+			SET username = $1
+			WHERE uid = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(newUsername, uid)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func UserExists(uid string) bool {

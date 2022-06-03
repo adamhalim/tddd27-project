@@ -47,6 +47,7 @@ func handleRequests() {
 		authorized.POST("videos/save", saveVideo)
 		authorized.POST("videos/comments/", addComment)
 		authorized.GET("me/", getMe)
+		authorized.POST("username/", changeUsername)
 	}
 
 	r.GET(ApiPath+"preview/", videoPreivew)
