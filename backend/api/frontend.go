@@ -145,3 +145,22 @@ func getComments(c *gin.Context) {
 		"data": comments,
 	})
 }
+
+func getMe(c *gin.Context) {
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+
+	user, err := postgres.FindUser(uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"username": user.Username,
+	})
+}
+
