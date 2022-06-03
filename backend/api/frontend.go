@@ -159,8 +159,14 @@ func getMe(c *gin.Context) {
 		return
 	}
 
+	videos, err := postgres.FindVideosFromUser(uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"username": user.Username,
+		"videos":   videos,
 	})
 }
 

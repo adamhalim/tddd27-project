@@ -203,6 +203,24 @@ func FindVideo(chunkName string) (Video, error) {
 	return video, nil
 }
 
+func FindVideosFromUser(uid string) ([]video, error) {
+	videos := []video{}
+	err := db.Select(&videos, `
+		SELECT 
+			chunkname, viewcount, videotitle
+		FROM
+			videos
+		WHERE
+			uid = $1
+	`, uid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return videos, nil
+}
+
 func UpdateLastViewed(chunkName string) error {
 	stmt, err := db.Prepare(`
 		UPDATE videos

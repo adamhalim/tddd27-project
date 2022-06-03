@@ -14,6 +14,12 @@ type Video struct {
 	OriginalFileName string `db:"originalfilename"`
 }
 
+type video struct {
+	Chunkname string `db:"chunkname"`
+	ViewCount int64  `db:"viewcount"`
+	Title     string `db:"videotitle"`
+}
+
 type Comment struct {
 	Id        string `db:"id"`
 	Chunkname string `db:"chunkname"`
