@@ -177,6 +177,58 @@ func AddVideo(video Video) error {
 	return nil
 }
 
+func DeleteVideo(uid string, chunkName string) error {
+	vid, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+	if vid.Uid != uid {
+		return errors.New("unathorized user")
+	}
+
+	err = deleteCommentsFromVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		DELETE
+			FROM videos
+		WHERE
+			uid = $1
+		AND
+			chuknname = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(uid, chunkName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteCommentsFromVideo(chunkName string) error {
+	stmt, err := db.Prepare(`
+		DELETE
+			FROM comments
+		WHERE
+			chuknname = $1
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func IncrementViewCount(chunkName string) error {
 	stmt, err := db.Prepare(`
 		UPDATE videos
