@@ -203,3 +203,28 @@ func changeUsername(c *gin.Context) {
 	c.Status(http.StatusOK)
 
 }
+
+func deleteVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	err = postgres.DeleteVideo(uid, chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

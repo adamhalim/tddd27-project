@@ -46,6 +46,7 @@ func handleRequests() {
 		authorized.POST("videos/", uploadVideoChunk)
 		authorized.POST("videos/save", saveVideo)
 		authorized.POST("videos/comments/", addComment)
+		authorized.DELETE("videos/", deleteVideo)
 		authorized.GET("me/", getMe)
 		authorized.POST("username/", changeUsername)
 	}
