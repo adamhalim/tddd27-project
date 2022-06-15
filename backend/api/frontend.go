@@ -136,6 +136,10 @@ func getComments(c *gin.Context) {
 	}
 
 	comments, err := postgres.GetComments(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
 	if chunkName == "" {
 		internalError(c, errors.New("no chunkName provided"))
 		return
