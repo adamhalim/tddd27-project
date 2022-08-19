@@ -27,7 +27,7 @@ func handleRequests() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"PUT", "GET", "POST"},
+		AllowMethods:     []string{"PUT", "GET", "POST", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Origin", "Authorization"},
 		AllowCredentials: true,
 	}))
