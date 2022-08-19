@@ -48,8 +48,8 @@ const Comments = ({ chunkName }: CommentsType) => {
         })
         if (res.status === 200) {
             interface response {
-                AuthorUid: string,
                 Comment: string,
+                Username: string,
                 Date: number
             }
             const data = res.data.data as response[]
@@ -57,7 +57,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             let comments: Comment[] = []
             data.forEach((c) => {
                 const date = new Date(c.Date)
-                comments.push({ comment: c.Comment, author: c.AuthorUid, date: date })
+                comments.push({ comment: c.Comment, author: c.Username, date: date })
             })
             setComments(comments)
             setCommentsCount(comments.length)
@@ -83,8 +83,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             withCredentials: true,
         })
         if (res.status === 201 && user?.sub) {
-            setComments([...comments, { comment: newComment, author: user.sub, date: new Date() }])
-            setCommentsCount(commentsCount + 1)
+            loadComments()
             setNewComment("")
         } else {
             // TODO: handle error :D
@@ -107,20 +106,23 @@ const Comments = ({ chunkName }: CommentsType) => {
                         />
                     )
                 }
-                <div className='comments-add'>
-                    <input
-                        placeholder='Add a comment...'
-                        onChange={changeNewComment}
-                        value={newComment}
-                    >
-                    </input>
-                    <button
-                        onClick={addComment}
-                        disabled={!newComment}
-                    >
-                        Comment
-                    </button>
-                </div>
+                {
+                    accessToken && <div className='comments-add'>
+                        <input
+                            placeholder='Add a comment...'
+                            onChange={changeNewComment}
+                            value={newComment}
+                        >
+                        </input>
+                        <button
+                            onClick={addComment}
+                            disabled={!newComment}
+                        >
+                            Comment
+                        </button>
+                    </div>
+                }
+
             </div>
         </div>
     )

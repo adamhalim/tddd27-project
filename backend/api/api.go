@@ -27,7 +27,7 @@ func handleRequests() {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"PUT", "GET", "POST"},
+		AllowMethods:     []string{"PUT", "GET", "POST", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Origin", "Authorization"},
 		AllowCredentials: true,
 	}))
@@ -46,6 +46,9 @@ func handleRequests() {
 		authorized.POST("videos/", uploadVideoChunk)
 		authorized.POST("videos/save", saveVideo)
 		authorized.POST("videos/comments/", addComment)
+		authorized.DELETE("videos/", deleteVideo)
+		authorized.GET("me/", getMe)
+		authorized.POST("username/", changeUsername)
 	}
 
 	r.GET(ApiPath+"preview/", videoPreivew)
