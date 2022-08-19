@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto+Mono:wght@200;400&family=Space+Mono&display=swap');
+
+.video-card-block {
+  padding: 0.5rem;
+  overflow-wrap: break-word;
+}
+
+.video-card-block p {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9em;
+}
+
+.video-card-block a {
+  word-wrap: break-word;
+  color: #1976D2;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.7em;
+}
+
+.btn-video-card a {
+  color: #2E7D32;
+}
+
+.video-thumbnail:hover {
+  cursor: pointer;
+}
+
+.video-card-elem {
+  font-family: monospace;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #F5F5F5;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.video-card-elem img {
+  width: 100%;
+  object-fit: contain;
+}
