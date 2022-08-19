@@ -197,7 +197,7 @@ func DeleteVideo(uid string, chunkName string) error {
 		WHERE
 			uid = $1
 		AND
-			chuknname = $2
+			chunkname = $2
 	`)
 	if err != nil {
 		return err
@@ -216,7 +216,7 @@ func deleteCommentsFromVideo(chunkName string) error {
 		DELETE
 			FROM comments
 		WHERE
-			chuknname = $1
+			chunkname = $1
 	`)
 	if err != nil {
 		return err
