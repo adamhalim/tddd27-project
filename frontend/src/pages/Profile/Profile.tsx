@@ -1,11 +1,19 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import VideoGrid from '../../components/VideoGrid';
 import './style.css'
+
+export interface video {
+    Chunkname: string,
+    ViewCount: number,
+    Title: string,
+}
 
 const Profile = () => {
     const { isAuthenticated, loginWithRedirect, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
     const [username, setUsername] = useState('')
+    const [videos, setVideos] = useState<video[]>([])
     const [accessToken, setAccessToken] = useState('')
     const [editingUsername, setEditingUsername] = useState(false)
 
@@ -43,11 +51,36 @@ const Profile = () => {
             },
             withCredentials: true,
         })
+
         interface response {
             username: string,
+            videos: video[],
         }
+
         const data = res.data as response
         setUsername(data.username)
+        setVideos(data.videos)
+    }
+
+    const deleteVideo = async (index: number) => {
+        const chunkname = videos[index].Chunkname
+        const res = await axios.delete('http://localhost:8080/api/auth/videos/', {
+            params: {
+                "chunkName": chunkname,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        })
+        if (res.status !== 204) {
+            console.log('error:', res)
+        } else {
+            setVideos(videos.filter((_, i) => {
+                return i !== index;
+            }));
+        }
     }
 
     const handleEditUsername = async () => {
@@ -105,7 +138,10 @@ const Profile = () => {
                         &#128393;
                     </button>
                 </div>
-
+                {videos && <VideoGrid
+                    videos={videos}
+                    deleteVideo={deleteVideo}
+                />}
             </div>
         </div>
     )
