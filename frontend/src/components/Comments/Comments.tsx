@@ -83,8 +83,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             withCredentials: true,
         })
         if (res.status === 201 && user?.sub) {
-            setComments([...comments, { comment: newComment, author: user.sub, date: new Date() }])
-            setCommentsCount(commentsCount + 1)
+            loadComments()
             setNewComment("")
         } else {
             // TODO: handle error :D
@@ -107,20 +106,23 @@ const Comments = ({ chunkName }: CommentsType) => {
                         />
                     )
                 }
-                <div className='comments-add'>
-                    <input
-                        placeholder='Add a comment...'
-                        onChange={changeNewComment}
-                        value={newComment}
-                    >
-                    </input>
-                    <button
-                        onClick={addComment}
-                        disabled={!newComment}
-                    >
-                        Comment
-                    </button>
-                </div>
+                {
+                    accessToken && <div className='comments-add'>
+                        <input
+                            placeholder='Add a comment...'
+                            onChange={changeNewComment}
+                            value={newComment}
+                        >
+                        </input>
+                        <button
+                            onClick={addComment}
+                            disabled={!newComment}
+                        >
+                            Comment
+                        </button>
+                    </div>
+                }
+
             </div>
         </div>
     )
