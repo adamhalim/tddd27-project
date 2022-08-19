@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
+	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
 )
 
@@ -226,6 +227,12 @@ func deleteVideo(c *gin.Context) {
 	}
 
 	err = postgres.DeleteVideo(uid, chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	err = objectstore.DeleteVideo(uid, chunkName)
 	if err != nil {
 		internalError(c, err)
 		return
