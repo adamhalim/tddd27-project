@@ -107,7 +107,8 @@ func createTables() {
 			chunkname VARCHAR(36) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
 			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid)
+			FOREIGN KEY(author_uid) REFERENCES users(uid),
+			UNIQUE (chunkname, author_uid)
 		)
 	`)
 
