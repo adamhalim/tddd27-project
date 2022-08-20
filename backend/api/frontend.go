@@ -259,6 +259,18 @@ func likeVideo(c *gin.Context) {
 
 	err = postgres.LikeVideo(chunkName, uid)
 	if err != nil {
+		// If the video has already been liked
+		if (err.(*pq.Error)).Code == "23505" {
+			c.Status(http.StatusOK)
+			return
+		}
+		internalError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
 		internalError(c, err)
 		return
 	}
