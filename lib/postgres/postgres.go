@@ -370,7 +370,7 @@ func LikeVideo(chunkName string, authorUid string) error {
 	stmt, err := db.Prepare(`
 		INSERT INTO likes(
 			chunkname,
-			author_uid,
+			author_uid
 		) VALUES($1, $2)
 	`)
 	if err != nil {
