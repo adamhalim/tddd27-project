@@ -239,3 +239,29 @@ func deleteVideo(c *gin.Context) {
 	}
 	c.Status(http.StatusNoContent)
 }
+
+func likeVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	err = postgres.LikeVideo(chunkName, uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}

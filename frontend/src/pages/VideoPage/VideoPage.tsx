@@ -21,6 +21,7 @@ const VideoPage = () => {
     const [videoURL, setVideoURL] = useState("");
     const [videoTitle, setVideoTitle] = useState("");
     const [viewCount, setViewCount] = useState(0);
+    const [accessToken, setAccessToken] = useState("");
 
     const { getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
 
@@ -37,6 +38,11 @@ const VideoPage = () => {
                 setVideoTitle(videotitle)
                 setViewCount(viewcount)
                 setLoading(false)
+                loadAccessToken().then((res) => {
+                    if (typeof res === 'string') {
+                        setAccessToken(res)
+                    }
+                })
             } else {
                 // TODO: error handling
             }
@@ -56,7 +62,27 @@ const VideoPage = () => {
         return accessToken;
     }
 
-    const likeVideo = () => {
+    const likeVideo = async () => {
+        if (accessToken) {
+            const res = await axios.post('http://localhost:8080/api/auth/videos/like/', {
+            }, {
+                params: {
+                    chunkName: id,
+
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`
+                },
+                withCredentials: true,
+            })
+            if (res.status !== 200) {
+                // TODO: Handle error
+                console.log(res)
+            }
+        } else {
+            loadAccessToken()
+        }
     }
 
 
@@ -71,7 +97,7 @@ const VideoPage = () => {
                         />
                         <div className='video-page-stats'>
                             <div className='video-page-title'> title: {videoTitle}</div>
-                            <div className='video-page-viewcount'>viewcount: {viewCount} likes: 0 <button>&hearts;</button> </div>
+                            <div className='video-page-viewcount'>viewcount: {viewCount} likes: 0 <button onClick={likeVideo}>&hearts;</button> </div>
                         </div>
                         <div className='video-page-comments'>
                             <Comments

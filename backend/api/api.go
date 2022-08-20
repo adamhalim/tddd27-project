@@ -49,6 +49,7 @@ func handleRequests() {
 		authorized.DELETE("videos/", deleteVideo)
 		authorized.GET("me/", getMe)
 		authorized.POST("username/", changeUsername)
+		authorized.POST("videos/like/", likeVideo)
 	}
 
 	r.GET(ApiPath+"preview/", videoPreivew)
