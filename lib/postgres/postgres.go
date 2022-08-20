@@ -100,6 +100,20 @@ func createTables() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS likes (
+			id SERIAL primary key,
+			chunkname VARCHAR(36) NOT NULL,
+			author_uid VARCHAR(50) NOT NULL,
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
+			FOREIGN KEY(author_uid) REFERENCES users(uid)
+		)
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func AddUser(user User) error {
@@ -340,4 +354,33 @@ func GetComments(chunkName string) ([]comment, error) {
 	}
 
 	return comments, nil
+}
+
+func LikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		INSERT INTO likes(
+			chunkname,
+			author_uid,
+		) VALUES($1, $2)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
