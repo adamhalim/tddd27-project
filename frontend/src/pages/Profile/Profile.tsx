@@ -80,6 +80,7 @@ const Profile = () => {
             setVideos(videos.filter((_, i) => {
                 return i !== index;
             }));
+            // TODO: Alert that video has been deleted
         }
     }
 
