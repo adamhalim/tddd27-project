@@ -81,9 +81,7 @@ const Profile = () => {
         if (res.status !== 204) {
             console.log('error:', res)
         } else {
-            setVideos(videos.filter((_, i) => {
-                return i !== index;
-            }));
+            getMe()
             // TODO: Alert that video has been deleted
         }
     }
