@@ -14,3 +14,6 @@
 .video-page-viewcount {
     float: right;
 }
+.video-page-viewcount-liked {
+    color: red;
+}

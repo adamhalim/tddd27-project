@@ -41,6 +41,12 @@ func getVideo(c *gin.Context) {
 		return
 	}
 
+	likeCount, err := postgres.GetVideoLikes(chunkName)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
 	err = postgres.UpdateLastViewed(chunkName)
 	if err != nil {
 		internalError(c, err)
@@ -51,6 +57,7 @@ func getVideo(c *gin.Context) {
 		"url":        url.String(),
 		"viewcount":  video.ViewCount,
 		"videotitle": video.Title,
+		"likecount":  likeCount,
 	})
 }
 

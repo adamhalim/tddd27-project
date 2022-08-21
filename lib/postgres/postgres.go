@@ -100,6 +100,21 @@ func createTables() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS likes (
+			id SERIAL primary key,
+			chunkname VARCHAR(36) NOT NULL,
+			author_uid VARCHAR(50) NOT NULL,
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
+			FOREIGN KEY(author_uid) REFERENCES users(uid),
+			UNIQUE (chunkname, author_uid)
+		)
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func AddUser(user User) error {
@@ -340,4 +355,100 @@ func GetComments(chunkName string) ([]comment, error) {
 	}
 
 	return comments, nil
+}
+
+func LikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		INSERT INTO likes(
+			chunkname,
+			author_uid
+		) VALUES($1, $2)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UserLikedVideo(chunkName string, authorUid string) (bool, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+		FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND
+			author_uid = $2
+	`, chunkName, authorUid)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == 1, nil
+}
+
+func UnLikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		DELETE FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND 
+			author_uid = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetVideoLikes(chunkName string) (int, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+	 	FROM 
+			likes
+		WHERE
+			chunkname=$1
+	 `, chunkName)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
