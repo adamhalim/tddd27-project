@@ -92,8 +92,8 @@ func createTables() {
 			comment VARCHAR(2000) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
 			date NUMERIC(14,0) NOT NULL,
-			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid)
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE
 		)
 	`)
 
@@ -106,8 +106,8 @@ func createTables() {
 			id SERIAL primary key,
 			chunkname VARCHAR(36) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
-			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid),
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE,
 			UNIQUE (chunkname, author_uid)
 		)
 	`)
