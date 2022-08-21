@@ -6,8 +6,9 @@ type VideoCardType = {
     title: string,
     index: number,
     deleteVideo: (index:number) => void
+    deletable: boolean,
 }
-const VideoCard = ({ thumbnail, chunkName, viewCount, title, index, deleteVideo }: VideoCardType) => {
+const VideoCard = ({ thumbnail, chunkName, viewCount, title, index, deleteVideo, deletable }: VideoCardType) => {
 
     return (
         <div className='video-card-elem col-sm-8 col-md-4 col-lg-2'>
@@ -20,7 +21,7 @@ const VideoCard = ({ thumbnail, chunkName, viewCount, title, index, deleteVideo 
             <div className='video-card-block'>
                 <p><span style={{ fontWeight: 'bold' }}>Title: </span>{title}</p>
                 <div className='btn-video-card'>
-                    <a href={`video/${chunkName}`} target='_blank'>View</a> | <a href='#' onClick={() => deleteVideo(index)}>Delete</a> | <span>{viewCount} views</span>
+                    <a href={`video/${chunkName}`} target='_blank'>View</a> | {deletable ? <a href='#' onClick={() => deleteVideo(index)}>Delete</a> : ''}  | <span>{viewCount} views</span>
                 </div>
             </div>
         </div>

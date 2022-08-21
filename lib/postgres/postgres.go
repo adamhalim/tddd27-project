@@ -92,8 +92,8 @@ func createTables() {
 			comment VARCHAR(2000) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
 			date NUMERIC(14,0) NOT NULL,
-			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid)
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE
 		)
 	`)
 
@@ -106,8 +106,8 @@ func createTables() {
 			id SERIAL primary key,
 			chunkname VARCHAR(36) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
-			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid),
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE,
 			UNIQUE (chunkname, author_uid)
 		)
 	`)
@@ -451,4 +451,26 @@ func GetVideoLikes(chunkName string) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func LikedVideos(uid string) ([]video, error) {
+	videos := []video{}
+
+	err := db.Select(&videos, `
+		SELECT 
+			v.chunkname, v.viewcount, v.videotitle
+		FROM
+			likes AS l
+		INNER JOIN
+			videos AS v
+		ON
+			l.chunkname = v.chunkname
+		WHERE
+			l.author_uid = $1
+	`, uid)
+
+	if err != nil {
+		return nil, err
+	}
+	return videos, nil
 }
