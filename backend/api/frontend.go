@@ -160,8 +160,19 @@ func getMe(c *gin.Context) {
 
 	user, err := postgres.FindUser(uid)
 	if err != nil {
-		internalError(c, err)
-		return
+		if !postgres.UserExists(uid) {
+			err = postgres.AddUser(postgres.User{
+				Uid:      uid,
+				Username: uid,
+			})
+			if err != nil {
+				internalError(c, err)
+				return
+			}
+		} else {
+			internalError(c, err)
+			return
+		}
 	}
 
 	videos, err := postgres.FindVideosFromUser(uid)
