@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
 import VideoPage from './pages/VideoPage';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Header />
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/profile' element={<Profile />} />
           <Route path='/video/:id' element={<VideoPage />}/>
           <Route path='*' element={<NotFound />} />
         </Routes>

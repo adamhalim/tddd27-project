@@ -6,6 +6,7 @@ import './style.css'
 
 type CommentsType = {
     chunkName: string,
+    loadAccessToken: () => Promise<String>
 }
 
 interface Comment {
@@ -14,7 +15,7 @@ interface Comment {
     date: Date,
 }
 
-const Comments = ({ chunkName }: CommentsType) => {
+const Comments = ({ chunkName, loadAccessToken }: CommentsType) => {
     const [accessToken, setAccessToken] = useState("");
     const [comments, setComments] = useState<Comment[]>([])
     const [commentsCount, setCommentsCount] = useState(0)
@@ -23,22 +24,16 @@ const Comments = ({ chunkName }: CommentsType) => {
     const { getAccessTokenSilently, getAccessTokenWithPopup, user } = useAuth0();
 
     useEffect(() => {
-        loadAccessToken();
+        loadAccessToken().then((res) => {
+            if (typeof res === 'string') {
+                setAccessToken(res)
+            } else {
+                // TODO: Handle error ??
+            }
+        });
         loadComments()
     }, [])
 
-    const loadAccessToken = async () => {
-        const accessToken = await getAccessTokenSilently({ audience: 'http://localhost:3000/' })
-            .then((res) => {
-                return res;
-            }).catch((err) => {
-                console.log(err);
-                // getAccessTokenSilently() with audience won't work on localhost,
-                // but will work with a popup. Ghetto workaround, but it works for now..
-                return getAccessTokenWithPopup({ audience: 'http://localhost:3000/' })
-            })
-        setAccessToken(accessToken)
-    }
 
     const loadComments = async () => {
         const res = await axios.get('http://localhost:8080/api/videos/comments/', {
@@ -48,8 +43,8 @@ const Comments = ({ chunkName }: CommentsType) => {
         })
         if (res.status === 200) {
             interface response {
-                AuthorUid: string,
                 Comment: string,
+                Username: string,
                 Date: number
             }
             const data = res.data.data as response[]
@@ -57,7 +52,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             let comments: Comment[] = []
             data.forEach((c) => {
                 const date = new Date(c.Date)
-                comments.push({ comment: c.Comment, author: c.AuthorUid, date: date })
+                comments.push({ comment: c.Comment, author: c.Username, date: date })
             })
             setComments(comments)
             setCommentsCount(comments.length)
@@ -83,8 +78,7 @@ const Comments = ({ chunkName }: CommentsType) => {
             withCredentials: true,
         })
         if (res.status === 201 && user?.sub) {
-            setComments([...comments, { comment: newComment, author: user.sub, date: new Date() }])
-            setCommentsCount(commentsCount + 1)
+            loadComments()
             setNewComment("")
         } else {
             // TODO: handle error :D
@@ -107,20 +101,23 @@ const Comments = ({ chunkName }: CommentsType) => {
                         />
                     )
                 }
-                <div className='comments-add'>
-                    <input
-                        placeholder='Add a comment...'
-                        onChange={changeNewComment}
-                        value={newComment}
-                    >
-                    </input>
-                    <button
-                        onClick={addComment}
-                        disabled={!newComment}
-                    >
-                        Comment
-                    </button>
-                </div>
+                {
+                    accessToken && <div className='comments-add'>
+                        <input
+                            placeholder='Add a comment...'
+                            onChange={changeNewComment}
+                            value={newComment}
+                        >
+                        </input>
+                        <button
+                            onClick={addComment}
+                            disabled={!newComment}
+                        >
+                            Comment
+                        </button>
+                    </div>
+                }
+
             </div>
         </div>
     )

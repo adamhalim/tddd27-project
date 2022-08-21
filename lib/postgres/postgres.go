@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -58,6 +59,7 @@ func createTables() {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			uid VARCHAR(50) NOT NULL,
+			username VARCHAR(50) NOT NULL UNIQUE,
 			CONSTRAINT pk_uid PRIMARY KEY(uid)
 		)
 	`)
@@ -90,8 +92,23 @@ func createTables() {
 			comment VARCHAR(2000) NOT NULL,
 			author_uid VARCHAR(50) NOT NULL,
 			date NUMERIC(14,0) NOT NULL,
-			FOREIGN KEY(chunkname) REFERENCES videos(chunkname),
-			FOREIGN KEY(author_uid) REFERENCES users(uid)
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE
+		)
+	`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS likes (
+			id SERIAL primary key,
+			chunkname VARCHAR(36) NOT NULL,
+			author_uid VARCHAR(50) NOT NULL,
+			FOREIGN KEY(chunkname) REFERENCES videos(chunkname) ON DELETE CASCADE,
+			FOREIGN KEY(author_uid) REFERENCES users(uid) ON DELETE CASCADE,
+			UNIQUE (chunkname, author_uid)
 		)
 	`)
 
@@ -102,12 +119,12 @@ func createTables() {
 
 func AddUser(user User) error {
 	stmt, err := db.Prepare(`
-		INSERT INTO users(uid) VALUES($1)
+		INSERT INTO users(uid, username) VALUES($1, $2)
 	`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Uid)
+	_, err = stmt.Exec(user.Uid, user.Username)
 	if err != nil {
 		return err
 	}
@@ -116,11 +133,31 @@ func AddUser(user User) error {
 
 func FindUser(uid string) (User, error) {
 	var user User
-	err := db.Get(&user, `SELECT uid FROM users WHERE uid=$1`, uid)
+	err := db.Get(&user, `SELECT * FROM users WHERE uid=$1`, uid)
 	if err != nil {
 		return User{}, err
 	}
 	return user, nil
+}
+
+func ChangeUsername(uid string, newUsername string) error {
+	if newUsername == "" {
+		return errors.New("error: empty username")
+	}
+	stmt, err := db.Prepare(`
+		UPDATE users
+			SET username = $1
+			WHERE uid = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(newUsername, uid)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func UserExists(uid string) bool {
@@ -155,6 +192,58 @@ func AddVideo(video Video) error {
 	return nil
 }
 
+func DeleteVideo(uid string, chunkName string) error {
+	vid, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+	if vid.Uid != uid {
+		return errors.New("unathorized user")
+	}
+
+	err = deleteCommentsFromVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		DELETE
+			FROM videos
+		WHERE
+			uid = $1
+		AND
+			chunkname = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(uid, chunkName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteCommentsFromVideo(chunkName string) error {
+	stmt, err := db.Prepare(`
+		DELETE
+			FROM comments
+		WHERE
+			chunkname = $1
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func IncrementViewCount(chunkName string) error {
 	stmt, err := db.Prepare(`
 		UPDATE videos
@@ -179,6 +268,24 @@ func FindVideo(chunkName string) (Video, error) {
 		return Video{}, err
 	}
 	return video, nil
+}
+
+func FindVideosFromUser(uid string) ([]video, error) {
+	videos := []video{}
+	err := db.Select(&videos, `
+		SELECT 
+			chunkname, viewcount, videotitle
+		FROM
+			videos
+		WHERE
+			uid = $1
+	`, uid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return videos, nil
 }
 
 func UpdateLastViewed(chunkName string) error {
@@ -228,12 +335,142 @@ func AddComment(chunkName string, comment string, authorUid string) error {
 	return nil
 }
 
-func GetComments(chunkName string) ([]Comment, error) {
+func GetComments(chunkName string) ([]comment, error) {
 
-	comments := []Comment{}
-	err := db.Select(&comments, `SELECT comment, author_uid, date FROM comments WHERE chunkname=$1`, chunkName)
+	comments := []comment{}
+
+	err := db.Select(&comments, `
+		SELECT 
+			c.comment,  c.date, u.username
+		FROM 
+			comments AS c
+		INNER JOIN users AS u ON
+			c.author_uid = u.uid
+		WHERE 
+			c.chunkname = $1
+	
+	`, chunkName)
 	if err != nil {
 		return nil, err
 	}
+
 	return comments, nil
+}
+
+func LikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		INSERT INTO likes(
+			chunkname,
+			author_uid
+		) VALUES($1, $2)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UserLikedVideo(chunkName string, authorUid string) (bool, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+		FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND
+			author_uid = $2
+	`, chunkName, authorUid)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == 1, nil
+}
+
+func UnLikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		DELETE FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND 
+			author_uid = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetVideoLikes(chunkName string) (int, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+	 	FROM 
+			likes
+		WHERE
+			chunkname=$1
+	 `, chunkName)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func LikedVideos(uid string) ([]video, error) {
+	videos := []video{}
+
+	err := db.Select(&videos, `
+		SELECT 
+			v.chunkname, v.viewcount, v.videotitle
+		FROM
+			likes AS l
+		INNER JOIN
+			videos AS v
+		ON
+			l.chunkname = v.chunkname
+		WHERE
+			l.author_uid = $1
+	`, uid)
+
+	if err != nil {
+		return nil, err
+	}
+	return videos, nil
 }

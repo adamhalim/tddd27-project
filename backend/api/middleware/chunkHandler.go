@@ -33,7 +33,10 @@ func HandleChunkUpload(r *http.Request, token *validator.ValidatedClaims) error 
 		}
 		userExists := postgres.UserExists(token.RegisteredClaims.Subject)
 		if !userExists {
-			err := postgres.AddUser(postgres.User{Uid: token.RegisteredClaims.Subject})
+			err := postgres.AddUser(postgres.User{
+				Uid:      token.RegisteredClaims.Subject,
+				Username: token.RegisteredClaims.Subject,
+			})
 			if err != nil {
 				return err
 			}

@@ -93,3 +93,12 @@ func GetVideoURL(chunkName string) (*url.URL, error) {
 	}
 	return u, nil
 }
+
+func DeleteVideo(uid string, chunkName string) error {
+
+	err := getMinioClient().RemoveObject(context.Background(), bucketName, chunkName+"/video.mp4", minio.RemoveObjectOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
