@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/backend/chunk"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/objectstore"
 	"gitlab.liu.se/adaab301/tddd27_2022_project/lib/postgres"
@@ -282,6 +283,53 @@ func likeVideo(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func userLikedVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	userLikedVideo, err := postgres.UserLikedVideo(chunkName, uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"userLikedVideo": userLikedVideo,
+	})
+}
+
+func unLikeVideo(c *gin.Context) {
+	queryParams, err := url.ParseQuery(c.Request.URL.RawQuery)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+	uid := gin.ResponseWriter.Header(c.Writer)["Uid"][0]
+	if uid == "" {
+		internalError(c, errors.New("no uid provided"))
+		return
+	}
+	chunkName := queryParams["chunkName"][0]
+	if chunkName == "" {
+		internalError(c, errors.New("no chunkName provided"))
+		return
+	}
+
+	err = postgres.UnLikeVideo(chunkName, uid)
+	if err != nil {
 		internalError(c, err)
 		return
 	}

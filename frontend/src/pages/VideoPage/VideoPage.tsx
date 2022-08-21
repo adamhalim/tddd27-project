@@ -15,6 +15,10 @@ interface videoStats {
     url: string
 }
 
+interface likedVideoResponse {
+    userLikedVideo: boolean
+}
+
 const VideoPage = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
@@ -22,6 +26,8 @@ const VideoPage = () => {
     const [videoTitle, setVideoTitle] = useState("");
     const [viewCount, setViewCount] = useState(0);
     const [accessToken, setAccessToken] = useState("");
+    const [likeCount, setLikeCount] = useState(0);
+    const [videoIsLiked, setVideoIsLiked] = useState(false);
 
     const { getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
 
@@ -29,18 +35,26 @@ const VideoPage = () => {
         update()
     }, [])
 
+
+    const updateVideoIsLikedStatus = async (accessCode: string) => {
+        const videoLiked = await isVideoLiked(accessCode)
+        setVideoIsLiked(videoLiked)
+    }
+
     const update = async () => {
         if (id) {
             const data = await fetchVideoURL(id as string)
             if (data) {
-                const { url, viewcount, videotitle } = data
+                const { url, viewcount, videotitle, likecount } = data
                 setVideoURL(url)
                 setVideoTitle(videotitle)
                 setViewCount(viewcount)
+                setLikeCount(likecount)
                 setLoading(false)
-                loadAccessToken().then((res) => {
+                loadAccessToken().then(async (res) => {
                     if (typeof res === 'string') {
                         setAccessToken(res)
+                        updateVideoIsLikedStatus(res)
                     }
                 })
             } else {
@@ -63,25 +77,44 @@ const VideoPage = () => {
     }
 
     const likeVideo = async () => {
-        if (accessToken) {
-            const res = await axios.post('http://localhost:8080/api/auth/videos/like/', {
-            }, {
-                params: {
-                    chunkName: id,
+        const res = await axios({
+            url: 'http://localhost:8080/api/auth/videos/like/',
+            method: videoIsLiked ? 'DELETE' : 'POST',
+            params: {
+                chunkName: id,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        });
+        if (res.status !== 200) {
+            // TODO: Handle error
+            console.log(res)
+        }
+        updateVideoIsLikedStatus(accessToken)
+        videoIsLiked ? setLikeCount(likeCount -1) : setLikeCount(likeCount +1);
+    }
 
-                },
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`
-                },
-                withCredentials: true,
-            })
-            if (res.status !== 200) {
-                // TODO: Handle error
-                console.log(res)
-            }
+    const isVideoLiked = async (accessToken: string): Promise<boolean> => {
+        const res = await axios.get('http://localhost:8080/api/auth/videos/like/', {
+            params: {
+                chunkName: id,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            withCredentials: true,
+        })
+        if (res.status === 200) {
+            const { userLikedVideo } = res.data as likedVideoResponse
+            return userLikedVideo
         } else {
-            loadAccessToken()
+            // TODO: Handle error
+            console.log(res)
+            return false
         }
     }
 
@@ -97,7 +130,16 @@ const VideoPage = () => {
                         />
                         <div className='video-page-stats'>
                             <div className='video-page-title'> title: {videoTitle}</div>
-                            <div className='video-page-viewcount'>viewcount: {viewCount} likes: 0 <button onClick={likeVideo}>&hearts;</button> </div>
+                            <div className='video-page-viewcount'>
+                                viewcount: {viewCount} likes: {likeCount}
+                                {
+                                    accessToken &&
+                                    <button onClick={likeVideo} className={videoIsLiked ? 'video-page-viewcount-liked' : ''}>
+                                        &hearts;
+                                    </button>
+                                }
+
+                            </div>
                         </div>
                         <div className='video-page-comments'>
                             <Comments
@@ -109,9 +151,7 @@ const VideoPage = () => {
 
                 </div>
             }
-
         </div>
-
     )
 }
 

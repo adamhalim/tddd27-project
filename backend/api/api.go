@@ -50,6 +50,8 @@ func handleRequests() {
 		authorized.GET("me/", getMe)
 		authorized.POST("username/", changeUsername)
 		authorized.POST("videos/like/", likeVideo)
+		authorized.GET("videos/like/", userLikedVideo)
+		authorized.DELETE("videos/like/", unLikeVideo)
 	}
 
 	r.GET(ApiPath+"preview/", videoPreivew)

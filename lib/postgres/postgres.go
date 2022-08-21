@@ -385,3 +385,70 @@ func LikeVideo(chunkName string, authorUid string) error {
 
 	return nil
 }
+
+func UserLikedVideo(chunkName string, authorUid string) (bool, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+		FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND
+			author_uid = $2
+	`, chunkName, authorUid)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == 1, nil
+}
+
+func UnLikeVideo(chunkName string, authorUid string) error {
+	_, err := FindVideo(chunkName)
+	if err != nil {
+		return err
+	}
+
+	_, err = FindUser(authorUid)
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.Prepare(`
+		DELETE FROM 
+			likes
+		WHERE
+			chunkname = $1
+		AND 
+			author_uid = $2
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(chunkName, authorUid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetVideoLikes(chunkName string) (int, error) {
+	var count int
+	err := db.Get(&count, `
+		SELECT 
+			COUNT(*)
+	 	FROM 
+			likes
+		WHERE
+			chunkname=$1
+	 `, chunkName)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}

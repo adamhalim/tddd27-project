@@ -8,6 +8,7 @@ interface fetchVideoData {
     url: string,
     viewcount: number,
     videotitle: string,
+    likecount: number
 
 }
 
