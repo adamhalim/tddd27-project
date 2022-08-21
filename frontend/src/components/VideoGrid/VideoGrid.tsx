@@ -5,9 +5,10 @@ import VideoCard from './VideoCard';
 type VideoGridType = {
     videos: video[],
     deleteVideo: (index:number) => void
+    deletable: boolean,
 }
 
-const VideoGrid = ({ videos, deleteVideo }: VideoGridType) => {
+const VideoGrid = ({ videos, deleteVideo, deletable }: VideoGridType) => {
     return (
         <div className="video-grid-container" >
             <div className='row'>
@@ -20,6 +21,7 @@ const VideoGrid = ({ videos, deleteVideo }: VideoGridType) => {
                             thumbnail='https://picsum.photos/300/200'
                             index={index}
                             deleteVideo={deleteVideo}
+                            deletable={deletable}
                         />
                     )
                 }

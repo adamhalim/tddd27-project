@@ -452,3 +452,25 @@ func GetVideoLikes(chunkName string) (int, error) {
 	}
 	return count, nil
 }
+
+func LikedVideos(uid string) ([]video, error) {
+	videos := []video{}
+
+	err := db.Select(&videos, `
+		SELECT 
+			v.chunkname, v.viewcount, v.videotitle
+		FROM
+			likes AS l
+		INNER JOIN
+			videos AS v
+		ON
+			l.chunkname = v.chunkname
+		WHERE
+			l.author_uid = $1
+	`, uid)
+
+	if err != nil {
+		return nil, err
+	}
+	return videos, nil
+}

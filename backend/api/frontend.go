@@ -181,9 +181,17 @@ func getMe(c *gin.Context) {
 		internalError(c, err)
 		return
 	}
+
+	likedVideos, err := postgres.LikedVideos(uid)
+	if err != nil {
+		internalError(c, err)
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"username": user.Username,
-		"videos":   videos,
+		"username":    user.Username,
+		"videos":      videos,
+		"likedVideos": likedVideos,
 	})
 }
 

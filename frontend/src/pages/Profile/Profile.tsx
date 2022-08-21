@@ -14,6 +14,7 @@ const Profile = () => {
     const { isAuthenticated, loginWithRedirect, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
     const [username, setUsername] = useState('')
     const [videos, setVideos] = useState<video[]>([])
+    const [likedVideos, setLikedVideos] = useState<video[]>([])
     const [accessToken, setAccessToken] = useState('')
     const [editingUsername, setEditingUsername] = useState(false)
 
@@ -24,6 +25,7 @@ const Profile = () => {
         }
         loadAccessToken()
     }, [])
+
     useEffect(() => {
         if (accessToken)
             getMe()
@@ -55,11 +57,13 @@ const Profile = () => {
         interface response {
             username: string,
             videos: video[],
+            likedVideos: video[],
         }
 
         const data = res.data as response
         setUsername(data.username)
         setVideos(data.videos)
+        setLikedVideos(data.likedVideos)
     }
 
     const deleteVideo = async (index: number) => {
@@ -139,10 +143,26 @@ const Profile = () => {
                         &#128393;
                     </button>
                 </div>
-                {videos && <VideoGrid
-                    videos={videos}
-                    deleteVideo={deleteVideo}
-                />}
+                {videos &&
+                    <div>
+                        <h3>Your videos</h3>
+                        <VideoGrid
+                            videos={videos}
+                            deleteVideo={deleteVideo}
+                            deletable={true}
+                        />
+                    </div>
+                }
+                {likedVideos &&
+                    <div>
+                        <h3>Liked videos</h3>
+                        <VideoGrid
+                            videos={likedVideos}
+                            deleteVideo={deleteVideo}
+                            deletable={false}
+                        />
+                    </div>
+                }
             </div>
         </div>
     )
